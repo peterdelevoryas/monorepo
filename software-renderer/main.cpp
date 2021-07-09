@@ -8,6 +8,14 @@ struct Pixel {
   uint8_t b, g, r;
 };
 
+struct Index2 {
+  uint32_t x, y;
+};
+
+struct Float2 {
+  float x, y;
+};
+
 struct Image {
   Pixel* pixels;
   uint32_t width;
@@ -39,10 +47,23 @@ struct Image {
   Pixel& at(uint32_t x, uint32_t y) {
     return pixels[y * width + x];
   }
+
+  void draw_line(Index2 a, Index2 b, Pixel color) {
+    auto dx = float(b.x - a.x) * 0.01f;
+    auto dy = float(b.y - a.y) * 0.01f;
+    auto p = Float2{float(a.x), float(a.y)};
+    for (int i = 0; i < 100; i++) {
+      auto x = uint32_t(p.x);
+      auto y = uint32_t(p.y);
+      this->at(x, y) = color;
+      p.x += dx;
+      p.y += dy;
+    }
+  }
 };
 
 int main() {
   auto image = Image::zeros(100, 100);
-  image.at(52, 41).r = 0xFF;
+  image.draw_line({10, 10}, {80, 32}, {0xFF, 0xFF, 0xFF});
   image.write_tga_file("out.tga");
 }
