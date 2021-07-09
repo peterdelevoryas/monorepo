@@ -35,15 +35,14 @@ struct Image {
     fwrite(pixels, sizeof(Pixel), width * height, file);
     fclose(file);
   }
+
+  Pixel& at(uint32_t x, uint32_t y) {
+    return pixels[y * width + x];
+  }
 };
 
 int main() {
-  auto image = Image::zeros(1920, 1080);
-  for (uint32_t i = 0; i < image.height; i++) {
-    image.pixels[i * image.width + image.width / 2].r = 0xFF;
-  }
-  for (uint32_t i = 0; i < image.width; i++) {
-    image.pixels[image.height * 3 * image.width / 4 + i].r = 0xFF;
-  }
+  auto image = Image::zeros(100, 100);
+  image.at(52, 41).r = 0xFF;
   image.write_tga_file("out.tga");
 }
