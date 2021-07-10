@@ -4,33 +4,43 @@
 #include <cstring>
 #include <array>
 
-struct Pixel {
-  uint8_t b, g, r;
-};
+#define swap(a, b)  \
+do {                \
+  auto tmp = a;     \
+  a = b;            \
+  b = tmp;          \
+} while (0)         \
 
-struct Index2 {
-  uint32_t x, y;
-};
-
-struct Float2 {
-  float x, y;
-};
+template<typename T>
+T abs(T x) {
+  return x < 0 ? -x : x;
+}
 
 struct Image {
-  Pixel* pixels;
-  uint32_t width;
-  uint32_t height;
+  struct Pixel {
+    uint8_t b;
+    uint8_t g;
+    uint8_t r;
+  };
 
-  static Image zeros(uint32_t width, uint32_t height) {
-    auto pixels_size = sizeof(Pixel) * width * height;
-    auto pixels = static_cast<Pixel*>(malloc(pixels_size));
-    memset(pixels, 0, pixels_size);
-    return {pixels, width, height};
+  struct Point {
+    int x;
+    int y;
+  };
+
+  Pixel* data;
+  int width;
+  int height;
+
+  static Image zeros(int width, int height) {
+    auto size = sizeof(Pixel) * width * height;
+    auto data = static_cast<Pixel*>(malloc(size));
+    memset(data, 0, size);
+    return {data, width, height};
   }
 
   void write_tga_file(const char* path) {
     auto file = fopen(path, "w");
-
     auto header = std::array<uint8_t, 18>{};
     header[2] = 2;
     header[12] = (width & 0x0000'00FF);
@@ -40,24 +50,37 @@ struct Image {
     header[16] = sizeof(Pixel) * 8; // Number of bits per pixel.
     header[17] = 0b0000'0000;
     fwrite(header.data(), header.size(), 1, file);
-    fwrite(pixels, sizeof(Pixel), width * height, file);
+    fwrite(data, sizeof(Pixel), width * height, file);
     fclose(file);
   }
 
-  Pixel& at(uint32_t x, uint32_t y) {
-    return pixels[y * width + x];
+  Pixel& at(int x, int y) {
+    return data[y * width + x];
   }
 
-  void draw_line(Index2 a, Index2 b, Pixel color) {
-    auto dx = float(b.x - a.x) * 0.01f;
-    auto dy = float(b.y - a.y) * 0.01f;
-    auto p = Float2{float(a.x), float(a.y)};
-    for (int i = 0; i < 100; i++) {
-      auto x = uint32_t(p.x);
-      auto y = uint32_t(p.y);
-      this->at(x, y) = color;
-      p.x += dx;
-      p.y += dy;
+  void draw_line(Point a, Point b, Pixel color) {
+    if (a.x > b.x) {
+      swap(a, b);
+    }
+
+    auto steep = false;
+    auto dx = b.x - a.x;
+    auto dy = b.y - a.y;
+    if (dy > dx) {
+      swap(a.x, a.y);
+      swap(b.x, b.y);
+      steep = true;
+    }
+
+    for (int x = a.x; x <= b.x; x++) {
+      auto dx = x - a.x;
+      auto t = dx / float(b.x - a.x);
+      auto y = a.y + int(float(b.y - a.y) * t);
+      if (steep) {
+        data[x * width + y] = color;
+        continue;
+      }
+      data[y * width + x] = color;
     }
   }
 };
@@ -65,5 +88,7 @@ struct Image {
 int main() {
   auto image = Image::zeros(100, 100);
   image.draw_line({10, 10}, {80, 32}, {0xFF, 0xFF, 0xFF});
+  image.draw_line({20, 13}, {40, 80}, {0x00, 0x00, 0xFF});
+  image.draw_line({80, 32}, {10, 10}, {0x00, 0x00, 0xFF});
   image.write_tga_file("out.tga");
 }
