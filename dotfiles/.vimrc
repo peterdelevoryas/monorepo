@@ -18,6 +18,7 @@ function PrintHighlighter()
   echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans<' . synIDattr(synID(line("."),col("."),0),"name") . "> lo<" . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") . ">"
 endfunction
 
+colorscheme solarized
 set background=dark
 syntax on
 
@@ -28,15 +29,9 @@ augroup ft_cpp
   autocmd!
   autocmd Syntax cpp syn match cFunctionName "[a-zA-Z_][a-zA-Z_0-9]*("me=e-1 contained
   autocmd Syntax cpp syn match cFunction "[a-zA-Z_][a-zA-Z_0-9]*(.*{$" contains=cFunctionName,cStorageClass,cType
-  autocmd Syntax cpp hi cFunctionName ctermfg=5
+  autocmd Syntax cpp hi cFunctionName ctermfg=4
 augroup end
 
-hi Include          ctermfg=7
-hi String           ctermfg=7
-hi Type             ctermfg=7
-hi Statement        ctermfg=7
-hi Constant         ctermfg=7
-hi Special          ctermfg=7
-hi VertSplit        ctermfg=0 ctermbg=7
-hi StatusLine       ctermfg=0 ctermbg=7
-hi StatusLineNC     ctermfg=0 ctermbg=7
+hi StatusLine     ctermfg=8  ctermbg=12
+hi StatusLineNC   ctermfg=8  ctermbg=12
+hi VertSplit      ctermfg=12 ctermbg=8
