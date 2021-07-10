@@ -6,6 +6,8 @@ if has("autocmd")
   au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
 endif
 
+filetype plugin indent on
+syntax on
 set smartcase
 set ignorecase
 set smartindent
@@ -18,7 +20,6 @@ set formatoptions+=cro
 set wildmode=full
 set t_Co=16
 set notermguicolors
-syntax on
 
 "colorscheme solarized
 "set background=dark
@@ -43,3 +44,4 @@ hi Constant       ctermfg=4
 hi Include        ctermfg=1
 hi Comment        ctermfg=8
 hi Special        ctermfg=4
+hi NonText        ctermfg=0
