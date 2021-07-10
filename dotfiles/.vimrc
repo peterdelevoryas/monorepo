@@ -25,13 +25,14 @@ syntax on
 set t_Co=16
 set notermguicolors
 
-augroup ft_cpp
-  autocmd!
-  autocmd Syntax cpp syn match cFunctionName "[a-zA-Z_][a-zA-Z_0-9]*("me=e-1 contained
-  autocmd Syntax cpp syn match cFunction "[a-zA-Z_][a-zA-Z_0-9]*(.*{$" contains=cFunctionName,cStorageClass,cType
-  autocmd Syntax cpp hi cFunctionName ctermfg=4
-augroup end
+" augroup ft_cpp
+"   autocmd!
+"   autocmd Syntax cpp syn match cFunctionName "[a-zA-Z_][a-zA-Z_0-9]*("me=e-1 contained
+"   autocmd Syntax cpp syn match cFunction "[a-zA-Z_][a-zA-Z_0-9]*(.*{$" contains=cFunctionName,cStorageClass,cType
+"   autocmd Syntax cpp hi cFunctionName ctermfg=12
+" augroup end
 
-hi StatusLine     ctermfg=8  ctermbg=12
-hi StatusLineNC   ctermfg=8  ctermbg=12
-hi VertSplit      ctermfg=12 ctermbg=8
+hi StatusLine       ctermfg=8  ctermbg=12
+hi StatusLineNC     ctermfg=8  ctermbg=12
+hi VertSplit        ctermfg=12 ctermbg=8
+hi cppSTLNamespace  ctermfg=12
