@@ -37,3 +37,6 @@ hi Type             ctermfg=7
 hi Statement        ctermfg=7
 hi Constant         ctermfg=7
 hi Special          ctermfg=7
+hi VertSplit        ctermfg=0 ctermbg=7
+hi StatusLine       ctermfg=0 ctermbg=7
+hi StatusLineNC     ctermfg=0 ctermbg=7
