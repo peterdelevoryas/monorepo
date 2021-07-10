@@ -83,6 +83,10 @@ struct Image {
       data[y * width + x] = color;
     }
   }
+
+  void free() {
+    ::free(data);
+  }
 };
 
 int main() {
@@ -91,4 +95,5 @@ int main() {
   image.draw_line({20, 13}, {40, 80}, {0x00, 0x00, 0xFF});
   image.draw_line({80, 32}, {10, 10}, {0x00, 0x00, 0xFF});
   image.write_tga_file("out.tga");
+  image.free();
 }

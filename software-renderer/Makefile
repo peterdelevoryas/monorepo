@@ -7,3 +7,4 @@ sr: main.cpp
 
 test: sr
 	./sr
+	feh out.tga --zoom max -g 1000x1000
