@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<head>
+    <title>Quick Attendance</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div id=content>
+    <div id=heading style="display:inline-block;">
+        <a href="picture.jpg" style="display:block;float:left">
+            <img src="picture.jpg" height=92 style="float:left;margin-right:1em;margin-top:1em;">
+        </a>
+        <div id=heading_text style="float:right;display:block;">
+            <h1>
+                <a href="/">peterd.net</a>
+            </h1>
+            <p>
+                <a href="mailto: peterdelevoryas@gmail.com">peterdelevoryas@gmail.com</a>
+                <a href="tel:720-371-7487">(720)371-7487</a>
+                <a href="https://github.com/peterdelevoryas">Github</a>
+                <a href="https://peterd.net">Resume</a>
+                <br>
+                <a href="petertheater.html">Live Stream</a>
+                <a href="quickattendance.html">Quick Attendance</a>
+            </p>
+        </div>
+    </div>
+
+
+
+    <h1>Select your attendance .csv files:</h1>
+    <input type="file" id="file-selector" accept=".csv" multiple/>
+    <ul id="output"></ul>
+    <script src="attendance_script.js"></script>
+</div>
+</body>
+</html>

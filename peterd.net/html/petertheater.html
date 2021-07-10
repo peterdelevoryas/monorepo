@@ -1,0 +1,134 @@
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="canonical" href="https://peterd.net/petertheater.html">
+        <link rel="stylesheet" href="styles.css">
+        <title>Peter Theater</title>
+        <style>
+            a:link {
+                color: #2a7bde;
+            }
+            a:visited {
+                color: #c061cb;
+            }
+            body {
+                color: #dedede;
+                background-color: black;
+            }
+        </style>
+    </head>
+    <body>
+        <div id=content>
+            <div id=heading style="display:inline-block;">
+                <a href="picture.jpg" style="display:block;float:left">
+                    <img src="picture.jpg" height=92 style="float:left;margin-right:1em;margin-top:1em;">
+                </a>
+                <div id=heading_text style="float:right;display:block;">
+                    <h1>
+                        <a href="/">peterd.net</a>
+                    </h1>
+                    <p>
+                        <a href="mailto: peterdelevoryas@gmail.com">peterdelevoryas@gmail.com</a>
+                        <a href="tel:720-371-7487">(720)371-7487</a>
+                        <a href="https://github.com/peterdelevoryas">Github</a>
+                        <a href="/">Resume</a>
+                        <br>
+                        <a href="petertheater.html">Live Stream</a>
+                        <a href="quickattendance.html">Quick Attendance</a>
+                    </p>
+                </div>
+            </div>
+            <script src="https://cdn.jsdelivr.net/npm/hls.js@latest/dist/hls.min.js"></script>
+            <video id="video" controls autoplay muted="muted" width=645 height=480></video>
+            <p id="latency"></p>
+            <script>
+                var video = document.getElementById("video");
+                var hls = undefined;
+                var latency = document.getElementById("latency");
+
+                function update_latency() {
+                    if (!hls) {
+                        return;
+                    }
+                    latency.innerHTML = `${hls.latency}`;
+                }
+                window.setInterval(update_latency, 100);
+
+                function main() {
+                    if (!Hls.isSupported()) {
+                        if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                            console.log('Using native HLS support');
+                            let note = document.createElement('p');
+                            note.innerHTML = 'Using native HLS support, not hls.js';
+                            document.body.append(note);
+
+                            video.src = '/hls/test.m3u8';
+                            video.onloadedmetadata = function(event) {
+                                video.play();
+                            };
+                            function log_latency(event) {
+                                let end = video.buffered.end(0);
+                                let dt = end - video.currentTime;
+                                latency.innerHTML = `${dt}`;
+                            }
+                            video.ontimeupdate = log_latency;
+
+                            return;
+                        }
+
+                        let error = document.createElement('p');
+                        error.innerHTML = 'HLS is not supported by your browser!';
+                        document.body.append(error);
+                        return;
+                    }
+					let config = {
+						// maxLiveSyncPlaybackRate: 2,
+                        // liveSyncDurationCount: 3,
+                        // liveMaxLatencyDurationCount: 4,
+                        liveDurationInfinity: true,
+					};
+					hls = new Hls(config);
+                    console.log('Using hls.js to play stream');
+                    hls.attachMedia(video);
+                    hls.on(Hls.Events.MEDIA_ATTACHED, function() {
+                        console.log("hls.js is connected");
+                        hls.loadSource("/hls/test.m3u8");
+                        hls.on(Hls.Events.MANIFEST_PARSED, function(event, data) {
+                            console.log("manifest loaded, found", data.levels.length);
+                            video.play();
+                        });
+                    });
+                    hls.on(Hls.Events.ERROR, function(event, data) {
+                        if (!data.fatal) {
+                            return;
+                        }
+                        switch (data.type) {
+                            case Hls.ErrorTypes.NETWORK_ERROR:
+                                if (data.response.code == 404) {
+                                    console.log("404, I'm probably not live streaming anything right now");
+                                    hls.destroy();
+                                    latency.remove();
+                                    let error = document.createElement('p');
+                                    error.innerHTML = "Peter Theater is closed right now";
+                                    document.body.append(error);
+                                    return
+                                }
+                                console.log("network error, trying to recover");
+                                hls.startLoad();
+                                break;
+                            case Hls.ErrorTypes.MEDIA_ERROR:
+                                console.log("media error, trying to recover");
+                                hls.recoverMediaError();
+                                break;
+                            default:
+                                console.log("fatal error:", data.type, data);
+                                break;
+                        }
+                    });
+                }
+                main();
+            </script>
+        </div>
+    </body>
+</html>

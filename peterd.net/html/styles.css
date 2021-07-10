@@ -1,0 +1,58 @@
+body {
+    font-family: Menlo,monospace;
+    margin: auto;
+    max-width: 50em;
+    background-color: #22272e;
+    color: #adbac7;
+    background-color: #000000;
+    color: #dedede;
+}
+@media screen and (min-device-width: 320px) and (max-device-width: 480px) {
+    body {
+        font-family: Menlo,monospace;
+        max-width: 100%;
+    }
+}
+
+a {
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+a:link {
+    // color: #6cb6ff;
+    color: #2a7bde;
+}
+
+a:visited {
+    color: #c061cb;
+}
+
+tt, pre {
+    font-family: Menlo,monospace;
+    min-width: 0;
+}
+p {
+    margin-bottom: 0;
+}
+code {
+    font-family: Menlo,monospace;
+    padding: 0px;
+    background: #eee;
+    border: solid 1px #ddd;
+    min-width: 0;
+    font-size: 90%;
+}
+h1 {
+    font-family: Menlo,monospace;
+    margin-bottom: 0;
+    font-weight: normal;
+}
+h2 {
+    font-family: Menlo,monospace;
+    font-size: 100%;
+    margin-bottom: 0;
+}
