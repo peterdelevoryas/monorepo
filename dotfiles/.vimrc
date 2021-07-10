@@ -45,3 +45,9 @@ hi Include        ctermfg=1
 hi Comment        ctermfg=8
 hi Special        ctermfg=4
 hi NonText        ctermfg=0
+
+hi pythonBuiltin        ctermfg=5
+hi pythonDecoratorName  ctermfg=5
+hi pythonFunction       ctermfg=4
+hi pythonString         ctermfg=6
+hi pythonQuotes         ctermfg=6
