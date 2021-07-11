@@ -4,8 +4,6 @@ body {
     max-width: 50em;
     background-color: #22272e;
     color: #adbac7;
-    background-color: #000000;
-    color: #dedede;
 }
 @media screen and (min-device-width: 320px) and (max-device-width: 480px) {
     body {
@@ -23,12 +21,11 @@ a:hover {
 }
 
 a:link {
-    // color: #6cb6ff;
-    color: #2a7bde;
+    color: #6cb6ff;
 }
 
 a:visited {
-    color: #c061cb;
+    color: #dcbdfb;
 }
 
 tt, pre {
