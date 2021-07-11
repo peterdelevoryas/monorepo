@@ -45,6 +45,8 @@ hi Include        ctermfg=1
 hi Comment        ctermfg=8
 hi Special        ctermfg=4
 hi NonText        ctermfg=0
+hi Visual         ctermfg=0 ctermbg=3
+hi Search         ctermfg=0 ctermbg=3
 
 hi pythonBuiltin        ctermfg=5
 hi pythonDecoratorName  ctermfg=5
