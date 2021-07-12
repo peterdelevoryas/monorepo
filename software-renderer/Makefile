@@ -1,7 +1,7 @@
 all: sr
 
 sr: main.cpp
-	g++ -std=c++20 -g main.cpp -Wall -Werror -O2 -o $@
+	g++ -std=c++20 -g main.cpp -Wall -Werror -O2 -o $@ -fsanitize=address
 
 .PHONY: test
 

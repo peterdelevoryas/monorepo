@@ -6,6 +6,7 @@
 #include <sys/mman.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <cmath>
 
 #define swap(a, b)  \
 do {                \
@@ -67,24 +68,28 @@ struct Image {
       swap(a, b);
     }
 
-    auto steep = false;
-    auto dx = b.x - a.x;
-    auto dy = b.y - a.y;
+    bool steep = false;
+    int dx = b.x - a.x;
+    int dy = b.y - a.y;
     if (dy > dx) {
       swap(a.x, a.y);
       swap(b.x, b.y);
       steep = true;
     }
 
-    for (int x = a.x; x <= b.x; x++) {
-      auto dx = x - a.x;
-      auto t = dx / float(b.x - a.x);
-      auto y = a.y + int(float(b.y - a.y) * t);
-      if (steep) {
-        data[x * width + y] = c;
+    int derr = dy * 2;
+    int err = 0;
+
+    for (int x = a.x, y = a.y; x <= b.x; x++) {
+      int x_ = steep ? y : x;
+      int y_ = steep ? x : y;
+      data[x_ * width + y_] = c;
+      err += derr;
+      if (err < dx) {
         continue;
       }
-      data[y * width + x] = c;
+      y +=
+      err -= dx * 2;
     }
   }
 
@@ -97,24 +102,8 @@ constexpr int N = 1'000'000;
 constexpr int M = 100;
 
 int main(int argc, char** argv) {
-  auto buf = static_cast<uint8_t*>(malloc(N * 4));
-  auto dev_random = fopen("/dev/random", "r");
-  fread(buf, N, 4, dev_random);
-  fclose(dev_random);
-  for (int i = 0; i < N * 4; i++) {
-    auto b = buf[i];
-    auto t = float(b) / 256.0;
-    buf[i] = uint8_t(float(M) * t);
-    assert(0 <= buf[i] && buf[i] < 100);
-  }
   auto image = Image::zeros(M, M);
-  for (int i = 0; i < N; i++) {
-    auto p = &buf[i * 4];
-    auto a = Image::Point(p[0], p[1]);
-    auto b = Image::Point(p[2], p[3]);
-    image.draw_line(a, b, {0, 0, 255});
-  }
+  image.draw_line({0, 0}, {99, 99}, {0, 0, 0xFF});
   image.write_tga_file("out.tga");
   image.free();
-  free(buf);
 }
