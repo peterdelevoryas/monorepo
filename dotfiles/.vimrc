@@ -28,12 +28,12 @@ set notermguicolors
 "hi VertSplit        ctermfg=12 ctermbg=8
 "hi cppSTLNamespace  ctermfg=12
 
-augroup ft_cpp
-  autocmd!
-  autocmd Syntax cpp syn match cFunctionName "[a-zA-Z_][a-zA-Z_0-9]*("me=e-1 contained
-  autocmd Syntax cpp syn match cFunction "[a-zA-Z_][a-zA-Z_0-9]*(.*{$" contains=cFunctionName,cStorageClass,cType
-  autocmd Syntax cpp hi cFunctionName ctermfg=5
-augroup end
+" augroup ft_cpp
+"   autocmd!
+"   autocmd Syntax cpp syn match cFunctionName "[a-zA-Z_][a-zA-Z_0-9]*("me=e-1 contained
+"   autocmd Syntax cpp syn match cFunction "[a-zA-Z_][a-zA-Z_0-9]*(.*{$" contains=cFunctionName,cStorageClass,cType
+"   autocmd Syntax cpp hi cFunctionName ctermfg=5
+" augroup end
 
 hi StatusLine     ctermfg=0 ctermbg=7
 hi StatusLineNC   ctermfg=0 ctermbg=7
