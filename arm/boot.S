@@ -10,8 +10,15 @@ _start:
   // Initialize stack pointer.
   mov sp, 2 << 21
 
-  // Jump to the kernel.
-  bl kernel_main
+  // Initialize bss section.
+  ldr x0, =__bss_start
+  ldr x1, =__bss_end
+1:
+  str xzr, [x0], #8
+  cmp x0, x1
+  bge 1b
+
+  bl main
 
 hang:
   b hang
