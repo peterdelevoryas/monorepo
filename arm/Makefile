@@ -15,4 +15,4 @@ kernel8.img: kernel8.elf
 .PHONY: test
 
 test: kernel8.img
-	qemu-system-aarch64 -M raspi3 -kernel kernel8.img -serial null -serial stdio -display none --trace memory_region_ops_write
+	qemu-system-aarch64 -M raspi3 -kernel kernel8.img -serial null -serial stdio -display none

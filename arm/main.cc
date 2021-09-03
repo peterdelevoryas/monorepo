@@ -52,10 +52,11 @@ void main() {
   *AUX_ENABLES = 1;
   // Disable UART1 interrupts.
   *AUX_MU_IIR_REG = 0;
-  // Enable tx/rx.
+  // Operate in 8-bit mode.
   *AUX_MU_LCR_REG = 1;
   // Set baud rate. 400_000_000 / (8 * (433 + 1)) = 115_200.
   *AUX_MU_BAUD_REG = 433;
+  // Enable tx/rx.
   *AUX_MU_CNTL_REG = 3;
 
   auto r = *GPFSEL1;
@@ -78,10 +79,10 @@ void main() {
 
   auto message = "hello world";
   for (int i = 0; i < strlen(message); i++) {
-    // auto transmitter_empty = *AUX_MU_LSR_REG & 0b100000;
-    // while (!transmitter_empty) {
-    //   asm volatile("nop");
-    // }
+    auto transmitter_empty = *AUX_MU_LSR_REG & 0b100000;
+    while (!transmitter_empty) {
+      asm volatile("nop");
+    }
     *AUX_MU_IO_REG = message[i];
   }
 
