@@ -42,6 +42,7 @@ hi NonText        ctermfg=0
 hi Visual         ctermfg=0 ctermbg=3
 hi Search         ctermfg=0 ctermbg=3
 
-hi Type ctermfg=7
-hi Constant ctermfg=7
-hi Special ctermfg=7
+hi Type           ctermfg=7
+hi Constant       ctermfg=7
+hi Special        ctermfg=7
+hi Include        ctermfg=7
