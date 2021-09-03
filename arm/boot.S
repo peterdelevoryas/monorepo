@@ -16,7 +16,7 @@ _start:
 1:
   str xzr, [x0], #8
   cmp x0, x1
-  bge 1b
+  blt 1b
 
   bl main
 
