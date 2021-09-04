@@ -12,7 +12,7 @@ set smartcase
 set ignorecase
 set smartindent
 set cinoptions=(0
-set sts=2 ts=8 sw=2 expandtab
+set sts=4 ts=8 sw=4 expandtab
 set fillchars+=stl:-
 set fillchars+=stlnc:-
 set hlsearch
