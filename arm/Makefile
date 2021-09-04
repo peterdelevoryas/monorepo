@@ -4,7 +4,7 @@ boot.o: boot.S
 	aarch64-linux-gnu-as boot.S -o boot.o -c -g
 
 main.o: main.cc
-	aarch64-linux-gnu-g++ -std=c++17 main.cc -o main.o -ffreestanding -c -Og -Wall -Wextra -g
+	aarch64-linux-gnu-g++ -std=c++17 main.cc -o main.o -ffreestanding -nostdlib -c -Og -g -fno-exceptions
 
 kernel8.elf: boot.o main.o
 	aarch64-linux-gnu-ld boot.o main.o -T link.ld -o kernel8.elf
