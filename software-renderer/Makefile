@@ -1,10 +1,11 @@
-all: sr
 
-sr: main.cpp
-	g++ -std=c++20 -g main.cpp -Wall -Werror -O2 -o $@ -fsanitize=address
+
+all: a.out
+
+a.out: main.cpp
+	$(CXX) -std=c++20 -g $< -Wall -Werror -O2 -o $@ -fsanitize=address -ffast-math -fno-exceptions
 
 .PHONY: test
 
-test: sr
-	./sr
-	feh out.tga --zoom max -g 1000x1000
+test: a.out
+	./a.out && feh out.tga
