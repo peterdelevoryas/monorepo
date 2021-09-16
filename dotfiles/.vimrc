@@ -21,8 +21,9 @@ set wildmode=full
 set t_Co=16
 set notermguicolors
 
-"colorscheme solarized
-"set background=dark
+colorscheme solarized
+set background=dark
+
 "hi StatusLine       ctermfg=8  ctermbg=12
 "hi StatusLineNC     ctermfg=8  ctermbg=12
 "hi VertSplit        ctermfg=12 ctermbg=8
@@ -35,39 +36,39 @@ set notermguicolors
 "   autocmd Syntax cpp hi cFunctionName ctermfg=5
 " augroup end
 
-hi StatusLine     ctermfg=0 ctermbg=7
-hi StatusLineNC   ctermfg=0 ctermbg=7
-hi VertSplit      ctermfg=0 ctermbg=7
-hi Type           ctermfg=4
-hi Statement      ctermfg=1
-hi Constant       ctermfg=4
-hi Include        ctermfg=1
-hi Comment        ctermfg=8
-hi Special        ctermfg=4
-hi NonText        ctermfg=0
-hi Visual         ctermfg=0 ctermbg=3
-hi Search         ctermfg=0 ctermbg=3
-
-hi pythonBuiltin        ctermfg=5
-hi pythonDecoratorName  ctermfg=5
-hi pythonFunction       ctermfg=4
-hi pythonString         ctermfg=6
-hi pythonQuotes         ctermfg=6
-
-hi rustModPathSep       ctermfg=7
-hi rustFuncName         ctermfg=5
-hi rustFuncCall         ctermfg=7
-hi rustTrait            ctermfg=1
-hi rustMacro            ctermfg=7
-hi rustOperator         ctermfg=7
-hi rustString           ctermfg=6
-hi rustModPath          ctermfg=7
-hi rustSigil            ctermfg=7
-hi rustIdentifier       ctermfg=7
-hi rustAttribute        ctermfg=7
-hi rustDerive           ctermfg=7
-hi rustDeriveTrait      ctermfg=7
-hi rustLifetime         ctermfg=7
-hi rustType             ctermfg=1
-hi rustStorage          ctermfg=7
-hi rustSelf             ctermfg=7
+" hi StatusLine     ctermfg=0 ctermbg=7
+" hi StatusLineNC   ctermfg=0 ctermbg=7
+" hi VertSplit      ctermfg=0 ctermbg=7
+" hi Type           ctermfg=4
+" hi Statement      ctermfg=1
+" hi Constant       ctermfg=4
+" hi Include        ctermfg=1
+" hi Comment        ctermfg=8
+" hi Special        ctermfg=4
+" hi NonText        ctermfg=0
+" hi Visual         ctermfg=0 ctermbg=3
+" hi Search         ctermfg=0 ctermbg=3
+" 
+" hi pythonBuiltin        ctermfg=5
+" hi pythonDecoratorName  ctermfg=5
+" hi pythonFunction       ctermfg=4
+" hi pythonString         ctermfg=6
+" hi pythonQuotes         ctermfg=6
+" 
+" hi rustModPathSep       ctermfg=7
+" hi rustFuncName         ctermfg=5
+" hi rustFuncCall         ctermfg=7
+" hi rustTrait            ctermfg=1
+" hi rustMacro            ctermfg=7
+" hi rustOperator         ctermfg=7
+" hi rustString           ctermfg=6
+" hi rustModPath          ctermfg=7
+" hi rustSigil            ctermfg=7
+" hi rustIdentifier       ctermfg=7
+" hi rustAttribute        ctermfg=7
+" hi rustDerive           ctermfg=7
+" hi rustDeriveTrait      ctermfg=7
+" hi rustLifetime         ctermfg=7
+" hi rustType             ctermfg=1
+" hi rustStorage          ctermfg=7
+" hi rustSelf             ctermfg=7
