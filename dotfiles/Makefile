@@ -1,15 +1,10 @@
 all:
 
-.PHONY: sync install
+.PHONY: install
 
 install:
-	cp .tmux.conf $(HOME)/.tmux.conf
-	cp .vimrc $(HOME)/.vimrc
-	cp .alacritty.yml $(HOME)/.alacritty.yml
+	ln -sF $(realpath .tmux.conf) $(HOME)/.tmux.conf
+	ln -sF $(realpath .vimrc) $(HOME)/.vimrc
+	ln -sF $(realpath .alacritty.yml) $(HOME)/.alacritty.yml
 	mkdir -p $(HOME)/.vim/colors
-	cp solarized.vim $(HOME)/.vim/colors/
-
-sync:
-	cp $(HOME)/.vimrc .vimrc
-	cp $(HOME)/.alacritty.yml .alacritty.yml
-	cp $(HOME)/.tmux.conf .tmux.conf
+	cp solarized.vim $(HOME)/.vim/colors
