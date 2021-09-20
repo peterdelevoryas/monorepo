@@ -64,8 +64,8 @@ struct Image {
         return {data, width, height};
     }
 
-    void free() {
-        ::free(data);
+    ~Image() {
+        free(data);
     }
 
     void write_tga_file(const char *path) {
@@ -212,5 +212,4 @@ int main() {
     }
 
     image.write_tga_file("out.tga");
-    image.free();
 }
