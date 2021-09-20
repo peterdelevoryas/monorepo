@@ -189,12 +189,14 @@ Obj read_obj_file(const char *path) {
 int main() {
     auto image = Image::init(800, 600);
 
-    for (int x = 0; x < 800; x += 100) {
-        image.draw_line(x, 0, x, 599);
+    for (int x = 0; x < image.width; x += 100) {
+        image.draw_line(x, 0, x, image.height - 1);
     }
-    for (int y = 0; y < 600; y += 100) {
-        image.draw_line(0, y, 799, y);
+    image.draw_line(image.width - 1, 0, image.width - 1, image.height - 1);
+    for (int y = 0; y < image.height; y += 100) {
+        image.draw_line(0, y, image.width - 1, y);
     }
+    image.draw_line(0, image.height - 1, image.width - 1, image.height - 1);
 
     auto obj = read_obj_file("head.obj");
     for (const auto& t : obj.triangles) {
