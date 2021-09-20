@@ -87,7 +87,7 @@ struct Image {
     fclose(file);
   }
 
-  void draw_line(int x0, int y0, int x1, int y1) {
+  void draw_line(int x0, int y0, int x1, int y1, Pixel color) {
     bool steep = false;
     if (std::abs(y1 - y0) > std::abs(x1 - x0)) {
       std::swap(x0, y0);
@@ -107,7 +107,7 @@ struct Image {
     for (int x = x0; x <= x1; x++) {
       auto i = steep ? x * width + y : y * width + x;
       if (0 < i && i < width * height) {
-        data[i] = {0, 0, 0xFF};
+        data[i] = color;
       }
       // printf("(%d, %d) e=%d\n", x, y, e);
       e += de;
@@ -116,6 +116,24 @@ struct Image {
         e -= dx;
       }
     }
+  }
+
+  void draw_triangle(int x0, int y0, int x1, int y1, int x2, int y2) {
+    if (y0 > y1) {
+      std::swap(x0, x1);
+      std::swap(y0, y1);
+    }
+    if (y0 > y2) {
+      std::swap(x0, x2);
+      std::swap(y0, y2);
+    }
+    if (y1 > y2) {
+      std::swap(x1, x2);
+      std::swap(y1, y2);
+    }
+    draw_line(x0, y0, x1, y1, {0, 0xFF, 0});
+    draw_line(x1, y1, x2, y2, {0, 0xFF, 0});
+    draw_line(x2, y2, x0, y0, {0, 0, 0xFF});
   }
 };
 
@@ -190,25 +208,26 @@ int main() {
   auto image = Image::init(800, 600);
 
   for (int x = 0; x < image.width; x += 100) {
-    image.draw_line(x, 0, x, image.height - 1);
+    image.draw_line(x, 0, x, image.height - 1, {0xFF, 0xFF, 0xFF});
   }
-  image.draw_line(image.width - 1, 0, image.width - 1, image.height - 1);
+  image.draw_line(image.width - 1, 0, image.width - 1, image.height - 1, {0xFF, 0xFF, 0xFF});
   for (int y = 0; y < image.height; y += 100) {
-    image.draw_line(0, y, image.width - 1, y);
+    image.draw_line(0, y, image.width - 1, y, {0xFF, 0xFF, 0xFF});
   }
-  image.draw_line(0, image.height - 1, image.width - 1, image.height - 1);
+  image.draw_line(0, image.height - 1, image.width - 1, image.height - 1, {0xFF, 0xFF, 0xFF});
 
   auto obj = read_obj_file("head.obj");
   for (const auto& t : obj.triangles) {
-    for (int i = 0; i < 3; i++) {
-      auto a = obj.vertices[t.vertex_index[i] - 1];
-      auto b = obj.vertices[t.vertex_index[(i + 1) % 3] - 1];
-      int x0 = (a.x + 1.0f) * (image.width / 2);
-      int y0 = (a.y + 1.0f) * (image.height / 2);
-      int x1 = (b.x + 1.0f) * (image.width / 2);
-      int y1 = (b.y + 1.0f) * (image.height / 2);
-      image.draw_line(x0, y0, x1, y1);
-    }
+    auto v0 = obj.vertices[t.vertex_index[0] - 1];
+    auto v1 = obj.vertices[t.vertex_index[1] - 1];
+    auto v2 = obj.vertices[t.vertex_index[2] - 1];
+    int x0 = (v0.x + 1.0f) * (image.width / 2);
+    int x1 = (v1.x + 1.0f) * (image.width / 2);
+    int x2 = (v2.x + 1.0f) * (image.width / 2);
+    int y0 = (v0.y + 1.0f) * (image.height / 2);
+    int y1 = (v1.y + 1.0f) * (image.height / 2);
+    int y2 = (v2.y + 1.0f) * (image.height / 2);
+    image.draw_triangle(x0, y0, x1, y1, x2, y2);
   }
 
   image.write_tga_file("out.tga");
