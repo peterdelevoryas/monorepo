@@ -204,18 +204,11 @@ Obj read_obj_file(const char *path) {
   return obj;
 }
 
+constexpr int WIDTH = 1920;
+constexpr int HEIGHT = 1080;
+
 int main() {
-  auto image = Image::init(800, 600);
-
-  for (int x = 0; x < image.width; x += 100) {
-    image.draw_line(x, 0, x, image.height - 1, {0xFF, 0xFF, 0xFF});
-  }
-  image.draw_line(image.width - 1, 0, image.width - 1, image.height - 1, {0xFF, 0xFF, 0xFF});
-  for (int y = 0; y < image.height; y += 100) {
-    image.draw_line(0, y, image.width - 1, y, {0xFF, 0xFF, 0xFF});
-  }
-  image.draw_line(0, image.height - 1, image.width - 1, image.height - 1, {0xFF, 0xFF, 0xFF});
-
+  auto image = Image::init(WIDTH, HEIGHT);
   auto obj = read_obj_file("head.obj");
   for (const auto& t : obj.triangles) {
     auto v0 = obj.vertices[t.vertex_index[0] - 1];
