@@ -104,9 +104,10 @@ struct Image {
     int e = 0;
     int y = y0;
     int y_step = y0 < y1 ? 1 : -1;
+    int out_of_bounds = width * height;
     for (int x = x0; x <= x1; x++) {
       auto i = steep ? x * width + y : y * width + x;
-      if (0 < i && i < width * height) {
+      if (0 < i && i < out_of_bounds) {
         data[i] = color;
       }
       // printf("(%d, %d) e=%d\n", x, y, e);
