@@ -144,15 +144,15 @@ struct Obj {
         float y;
         float z;
     };
-    struct Triangle {
-        uint16_t vertex_index[3];
+    struct Face {
+        uint16_t vertex_index[4];
     };
 
     Vec<Vertex> vertices;
-    Vec<Triangle> triangles;
+    Vec<Face> faces;
 
-    static Obj::Vertex parse_vertex(FILE *f) {
-        auto v = Obj::Vertex{};
+    static Vertex parse_vertex(FILE *f) {
+        auto v = Vertex{};
         if (fscanf(f, "%f %f %f\n", &v.x, &v.y, &v.z) != 3) {
             printf("Error parsing vertex\n");
             exit(1);
@@ -160,17 +160,21 @@ struct Obj {
         return v;
     }
 
-    static Obj::Triangle parse_triangle(FILE *f) {
-        auto t = Obj::Triangle{};
-        uint16_t unused = 0;
-        if (fscanf(f, " %hu/%hu/%hu %hu/%hu/%hu %hu/%hu/%hu\n",
-                     &t.vertex_index[0], &unused, &unused,
-                     &t.vertex_index[1], &unused, &unused,
-                     &t.vertex_index[2], &unused, &unused) != 9) {
-            printf("Error parsing face\n");
-            exit(1);
+    static Face parse_face(FILE *f) {
+        auto face = Face{};
+        for (int i = 0; i < 4; i++) {
+            if (i) {
+                assert(fscanf(f, " ") == 0);
+            }
+            uint16_t discard = 0;
+            int err = fscanf(f, "%hu/%hu/%hu", &face.vertex_index[i], &discard, &discard);
+            if (err != 3) {
+                face.vertex_index[i] = UINT16_MAX;
+                continue;
+            }
         }
-        return t;
+        fscanf(f, "\n");
+        return face;
     }
 
     static Obj init(const char *path) {
@@ -190,8 +194,8 @@ struct Obj {
                     break;
                 }
                 case 'f': {
-                    auto t = parse_triangle(f);
-                    obj.triangles.push(t);
+                    auto face = parse_face(f);
+                    obj.faces.push(face);
                     break;
                 }
                 default:
@@ -211,7 +215,7 @@ constexpr int HEIGHT = 1000;
 int main() {
     auto image = Image::init(WIDTH, HEIGHT);
     auto obj = Obj::init("head.obj");
-    for (const auto& t : obj.triangles) {
+    for (const auto& t : obj.faces) {
         auto v0 = obj.vertices[t.vertex_index[0] - 1];
         auto v1 = obj.vertices[t.vertex_index[1] - 1];
         auto v2 = obj.vertices[t.vertex_index[2] - 1];
