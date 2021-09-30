@@ -22,9 +22,22 @@ set t_Co=16
 set notermguicolors
 
 set background=dark
-hi StatusLine       ctermfg=8  ctermbg=12
-hi StatusLineNC     ctermfg=8  ctermbg=12
-hi VertSplit        ctermfg=12 ctermbg=8
+"hi StatusLine       ctermfg=8  ctermbg=12
+"hi StatusLineNC     ctermfg=8  ctermbg=12
+"hi VertSplit        ctermfg=12 ctermbg=8
+hi StatusLine ctermfg=0 ctermbg=7
+hi StatusLineNC ctermfg=0 ctermbg=7
+hi VertSplit ctermfg=0 ctermbg=7
+hi cStructure ctermfg=1
+hi cType ctermfg=1
+hi cStorageClass ctermfg=1
+hi Comment ctermfg=8
+hi Constant ctermfg=4
+hi Statement ctermfg=1
+hi PreProc ctermfg=1
+hi NonText ctermfg=0
+hi String ctermfg=6
+
 "hi cppSTLNamespace  ctermfg=12
 
 " augroup ft_cpp
