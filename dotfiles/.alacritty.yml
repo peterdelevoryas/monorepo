@@ -17,10 +17,10 @@ cursor:
 # The 'Dark dimmed' colorscheme from Github.
 colors:
   primary:
-    background: '#22272e'
+    background: '#2d333b'
     foreground: '#adbac7'
   normal:
-    black:   '#22272e'
+    black:   '#2d333b'
     red:     '#f47067'
     green:   '#8ddb8c'
     yellow:  '#f69d50'
