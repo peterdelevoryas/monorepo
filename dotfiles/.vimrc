@@ -21,6 +21,7 @@ set wildmode=full
 set t_Co=16
 set notermguicolors
 
+colorscheme solarized
 set background=dark
 hi StatusLine       ctermfg=8  ctermbg=12
 hi StatusLineNC     ctermfg=8  ctermbg=12
