@@ -20,7 +20,7 @@ colors:
     background: '#22272e'
     foreground: '#adbac7'
   normal:
-    black:  '##22272e'
+    black:   '#22272e'
     red:     '#f47067'
     green:   '#8ddb8c'
     yellow:  '#f69d50'
