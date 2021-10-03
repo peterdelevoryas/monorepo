@@ -12,7 +12,8 @@ set smartcase
 set ignorecase
 set smartindent
 set cinoptions=(0
-set sts=4 ts=4 sw=4 expandtab
+set sts=2 ts=2 sw=2 expandtab
+"set sts=8 ts=8 sw=8 noexpandtab
 set fillchars+=stl:-
 set fillchars+=stlnc:-
 set hlsearch
@@ -34,3 +35,5 @@ hi VertSplit        ctermfg=12 ctermbg=8
 "   autocmd Syntax cpp syn match cFunction "[a-zA-Z_][a-zA-Z_0-9]*(.*{$" contains=cFunctionName,cStorageClass,cType
 "   autocmd Syntax cpp hi cFunctionName ctermfg=5
 " augroup end
+
+set noswapfile
