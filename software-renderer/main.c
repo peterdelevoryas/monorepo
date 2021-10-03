@@ -5,11 +5,11 @@
 #include <errno.h>
 #include <assert.h>
 
-#define swap(x, y)      \
-  do {                  \
-    typeof(x) tmp = x;  \
-    x = y;              \
-    y = tmp;            \
+#define swap(x, y)        \
+  do {                    \
+    __auto_type tmp = x;  \
+    x = y;                \
+    y = tmp;              \
   } while (0)
 
 #define panic(...)        \
@@ -71,10 +71,19 @@ void image_write_tga_file(struct image *self, const char *path) {
   fclose(file);
 }
 
+void image_set_pixel(struct image *self, int x, int y, struct image_pixel value) {
+  int i = y * self->width + x;
+  if (i < 0 || i >= self->width * self->height) {
+    return;
+  }
+  self->pixels[i] = value;
+}
+
 void image_draw_line(struct image *self, int x0, int y0, int x1, int y1, uint32_t rgb) {
   uint8_t r = (rgb & 0xFF0000) >> 16;
   uint8_t g = (rgb & 0xFF00) >> 8;
   uint8_t b = rgb & 0xFF;
+  struct image_pixel pixel = {b, g, r};
   int steep = 0;
   if (abs(y1 - y0) > abs(x1 - x0)) {
     swap(x0, y0);
@@ -91,11 +100,11 @@ void image_draw_line(struct image *self, int x0, int y0, int x1, int y1, uint32_
   int e = 0;
   int y = y0;
   int y_step = y0 < y1 ? 1 : -1;
-  int out_of_bounds = self->width * self->height;
   for (int x = x0; x <= x1; x++) {
-    int i = steep ? x * self->width + y : y * self->width + x;
-    if (0 < i && i < out_of_bounds) {
-      self->pixels[i] = (struct image_pixel){b, g, r};
+    if (steep) {
+      image_set_pixel(self, x, y, pixel);
+    } else {
+      image_set_pixel(self, y, x, pixel);
     }
     e += de;
     if (2 * e >= dx) {
@@ -106,6 +115,13 @@ void image_draw_line(struct image *self, int x0, int y0, int x1, int y1, uint32_
 }
 
 void image_draw_triangle(struct image *self, int x0, int y0, int x1, int y1, int x2, int y2) {
+  struct image_pixel pixel = {0xFF, 0x00, 0x00};
+
+  printf("image_draw_triangle (%d, %d) (%d, %d) (%d, %d)\n", x0, y0, x1, y1, x2, y2);
+
+  if (y0 == y1 && y0 == y2) {
+    return;
+  }
   if (y0 > y1) {
     swap(x0, x1);
     swap(y0, y1);
@@ -118,9 +134,41 @@ void image_draw_triangle(struct image *self, int x0, int y0, int x1, int y1, int
     swap(x1, x2);
     swap(y1, y2);
   }
-  image_draw_line(self, x0, y0, x1, y1, 0x00FF00);
-  image_draw_line(self, x1, y1, x2, y2, 0x00FF00);
-  image_draw_line(self, x2, y2, x0, y0, 0xFF0000);
+  int total_height = y2 - y0;
+  int lower_half_height = y1 - y0 + 1;
+  int upper_half_height = y2 - y1 + 1;
+  // Lower half.
+  for (int y = y0; y <= y1; y++) {
+    float a = (float)(y - y0) / total_height;
+    float b = (float)(y - y0) / lower_half_height;
+    int ax = (x2 - x0) * a + x0;
+    int ay = (y2 - y0) * a + y0;
+    int bx = (x1 - x0) * b + x0;
+    int by = (y1 - y0) * b + y0;
+    if (ax > bx) {
+      swap(ax, bx);
+      swap(ay, by);
+    }
+    for (int x = ax; x <= bx; x++) {
+      image_set_pixel(self, x, y, pixel);
+    }
+  }
+  // Upper half.
+  for (int y = y1; y <= y2; y++) {
+    float a = (float)(y - y0) / total_height;
+    float b = (float)(y - y1) / upper_half_height;
+    int ax = (x2 - x0) * a + x0;
+    int ay = (y2 - y0) * a + y0;
+    int bx = (x2 - x1) * b + x1;
+    int by = (y2 - y1) * b + y1;
+    if (ax > bx) {
+      swap(ax, bx);
+      swap(ay, by);
+    }
+    for (int x = ax; x <= bx; x++) {
+      image_set_pixel(self, x, y, pixel);
+    }
+  }
 }
 
 struct obj_vertex {
