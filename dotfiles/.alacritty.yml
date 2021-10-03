@@ -9,7 +9,7 @@ window:
 font:
   normal:
     family: Menlo
-  size: 18
+  size: 13
 
 colors:
   primary:
