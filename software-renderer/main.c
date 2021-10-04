@@ -4,6 +4,7 @@
 #include <string.h>
 #include <errno.h>
 #include <assert.h>
+#include <math.h>
 
 #define swap(x, y)        \
   do {                    \
@@ -30,6 +31,20 @@
     }                                                   \
     data[count++] = value;                              \
   } while (0)
+
+#define min(x, y)       \
+  ({                    \
+    __auto_type a = x;  \
+    __auto_type b = y;  \
+    a <= b ? a : b;     \
+  })
+
+#define max(x, y)       \
+  ({                    \
+    __auto_type a = x;  \
+    __auto_type b = y;  \
+    a >= b ? a : b;     \
+  })
 
 struct image_pixel {
   uint8_t b;
@@ -116,56 +131,28 @@ void image_draw_line(struct image *self, int x0, int y0, int x1, int y1, uint32_
 
 void image_draw_triangle(struct image *self, int x0, int y0, int x1, int y1, int x2, int y2) {
   struct image_pixel pixel = {0xFF, 0x00, 0x00};
-
-  printf("image_draw_triangle (%d, %d) (%d, %d) (%d, %d)\n", x0, y0, x1, y1, x2, y2);
-
-  if (y0 == y1 && y0 == y2) {
-    return;
-  }
-  if (y0 > y1) {
-    swap(x0, x1);
-    swap(y0, y1);
-  }
-  if (y0 > y2) {
-    swap(x0, x2);
-    swap(y0, y2);
-  }
-  if (y1 > y2) {
-    swap(x1, x2);
-    swap(y1, y2);
-  }
-  int total_height = y2 - y0;
-  int lower_half_height = y1 - y0 + 1;
-  int upper_half_height = y2 - y1 + 1;
-  // Lower half.
-  for (int y = y0; y <= y1; y++) {
-    float a = (float)(y - y0) / total_height;
-    float b = (float)(y - y0) / lower_half_height;
-    int ax = (x2 - x0) * a + x0;
-    int ay = (y2 - y0) * a + y0;
-    int bx = (x1 - x0) * b + x0;
-    int by = (y1 - y0) * b + y0;
-    if (ax > bx) {
-      swap(ax, bx);
-      swap(ay, by);
-    }
-    for (int x = ax; x <= bx; x++) {
-      image_set_pixel(self, x, y, pixel);
-    }
-  }
-  // Upper half.
-  for (int y = y1; y <= y2; y++) {
-    float a = (float)(y - y0) / total_height;
-    float b = (float)(y - y1) / upper_half_height;
-    int ax = (x2 - x0) * a + x0;
-    int ay = (y2 - y0) * a + y0;
-    int bx = (x2 - x1) * b + x1;
-    int by = (y2 - y1) * b + y1;
-    if (ax > bx) {
-      swap(ax, bx);
-      swap(ay, by);
-    }
-    for (int x = ax; x <= bx; x++) {
+  int min_x = min(min(x0, x1), x2);
+  int min_y = min(min(y0, y1), y2);
+  int max_x = max(max(x0, x1), x2);
+  int max_y = max(max(y0, y1), y2);
+  for (int x = min_x; x <= max_x; x++) {
+    for (int y = min_y; y <= max_y; y++) {
+      float a1 = x2 - x0;
+      float a2 = x1 - x0;
+      float a3 = x0 - x;
+      float b1 = y2 - y0;
+      float b2 = y1 - y0;
+      float b3 = y0 - y;
+      float s1 = a2 * b3 - a3 * b2;
+      float s2 = a3 * b1 - a1 * b3;
+      float s3 = a1 * b2 - a2 * b1;
+      if (fabsf(s3) < 1.0f)
+        continue;
+      float t1 = 1.0f - (s1 + s2) / s3;
+      float t2 = s2 / s3;
+      float t3 = s1 / s3;
+      if (t1 < 0.0f || t2 < 0.0f || t3 < 0.0f)
+        continue;
       image_set_pixel(self, x, y, pixel);
     }
   }
@@ -233,12 +220,13 @@ void image_draw_obj(struct image *image, const struct obj *obj) {
 }
 
 int main() {
-  struct obj obj = {};
+  //struct obj obj = {};
   struct image image = {};
 
-  obj_init(&obj, "head.obj");
+  //obj_init(&obj, "head.obj");
   
-  image_init(&image, 1000, 1000);
-  image_draw_obj(&image, &obj);
+  image_init(&image, 200, 200);
+  //image_draw_obj(&image, &obj);
+  image_draw_triangle(&image, 10, 10, 100, 30, 190, 160);
   image_write_tga_file(&image, "out.tga");
 }
