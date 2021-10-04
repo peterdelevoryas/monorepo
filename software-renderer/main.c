@@ -129,8 +129,8 @@ void image_draw_line(struct image *self, int x0, int y0, int x1, int y1, uint32_
   }
 }
 
-void image_draw_triangle(struct image *self, int x0, int y0, int x1, int y1, int x2, int y2) {
-  struct image_pixel pixel = {0xFF, 0x00, 0x00};
+void image_draw_triangle(struct image *self, int x0, int y0, int x1, int y1, int x2, int y2,
+                         struct image_pixel pixel) {
   int min_x = min(min(x0, x1), x2);
   int min_y = min(min(y0, y1), y2);
   int max_x = max(max(x0, x1), x2);
@@ -215,18 +215,22 @@ void image_draw_obj(struct image *image, const struct obj *obj) {
     int y0 = (v0->y + 1.0f) * (image->height / 2);
     int y1 = (v1->y + 1.0f) * (image->height / 2);
     int y2 = (v2->y + 1.0f) * (image->height / 2);
-    image_draw_triangle(image, x0, y0, x1, y1, x2, y2);
+    int r = rand() % 255;
+    int g = rand() % 255;
+    int b = rand() % 255;
+    struct image_pixel pixel = {b, g, r};
+    image_draw_triangle(image, x0, y0, x1, y1, x2, y2, pixel);
   }
 }
 
 int main() {
-  //struct obj obj = {};
+  struct obj obj = {};
   struct image image = {};
 
-  //obj_init(&obj, "head.obj");
+  obj_init(&obj, "head.obj");
   
-  image_init(&image, 200, 200);
-  //image_draw_obj(&image, &obj);
-  image_draw_triangle(&image, 10, 10, 100, 30, 190, 160);
+  image_init(&image, 1000, 1000);
+  image_draw_obj(&image, &obj);
+  //image_draw_triangle(&image, 10, 10, 100, 30, 190, 160);
   image_write_tga_file(&image, "out.tga");
 }
