@@ -5,6 +5,19 @@
 #include <errno.h>
 #include <assert.h>
 #include <math.h>
+#include <unistd.h>
+
+#ifdef __linux__
+#define IMAGE_VIEWER "feh"
+#endif
+
+#ifdef __APPLE__
+#define IMAGE_VIEWER "open"
+#endif
+
+#ifndef IMAGE_VIEWER
+#error "Unsupported platform"
+#endif
 
 #define swap(x, y)        \
   do {                    \
@@ -67,7 +80,11 @@ void image_init(struct image *self, int width, int height) {
   self->height = height;
 }
 
-void image_write_tga_file(struct image *self, const char *path) {
+void image_free(struct image *self) {
+  free(self->pixels);
+}
+
+void image_write_tga_file(struct image *self, FILE *file) {
   uint8_t header[18] = {};
   // Uncompressed true color image.
   header[2] = 2;
@@ -80,10 +97,8 @@ void image_write_tga_file(struct image *self, const char *path) {
   // Bits-per-pixel.
   header[16] = sizeof(self->pixels[0]) * 8;
 
-  FILE *file = fopen(path, "w");
   fwrite(header, sizeof(header), 1, file);
   fwrite(self->pixels, sizeof(self->pixels[0]), self->width * self->height, file);
-  fclose(file);
 }
 
 void image_set_pixel(struct image *self, int x, int y, struct image_pixel value) {
@@ -203,6 +218,11 @@ void obj_init(struct obj *self, const char *path) {
   } while (c != EOF);
 }
 
+void obj_free(struct obj *self) {
+  free(self->vertices);
+  free(self->faces);
+}
+
 void image_draw_obj(struct image *image, const struct obj *obj) {
   for (int i = 0; i < obj->face_count; i++) {
     const struct obj_face *f = &obj->faces[i];
@@ -226,11 +246,20 @@ void image_draw_obj(struct image *image, const struct obj *obj) {
 int main() {
   struct obj obj = {};
   struct image image = {};
+  FILE *out;
 
   obj_init(&obj, "head.obj");
-  
   image_init(&image, 1000, 1000);
+
   image_draw_obj(&image, &obj);
-  //image_draw_triangle(&image, 10, 10, 100, 30, 190, 160);
-  image_write_tga_file(&image, "out.tga");
+  obj_free(&obj);
+
+  out = fopen("out.tga", "w");
+  image_write_tga_file(&image, out);
+  fclose(out);
+
+  image_free(&image);
+
+  execlp(IMAGE_VIEWER, "open", "out.tga", NULL);
+  perror("execlp");
 }
