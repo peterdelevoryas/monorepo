@@ -31,6 +31,11 @@ set background=dark
 "   autocmd Syntax cpp hi cFunctionName ctermfg=5
 " augroup end
 
+augroup ft_c
+  autocmd!
+  autocmd Syntax c syn keyword Statement let
+augroup end
+
 hi Type ctermfg=1
 hi StatusLine ctermfg=0 ctermbg=7
 hi StatusLineNC ctermfg=0 ctermbg=7
@@ -44,3 +49,17 @@ hi Comment ctermfg=8
 hi PreProc ctermfg=7
 hi Include ctermfg=1
 hi cErrInParen ctermfg=7
+hi NonText ctermfg=0
+hi MatchParen ctermbg=8
+hi cppSTLtype ctermfg=7
+
+hi rustFuncName ctermfg=7
+hi rustModPathSep ctermfg=7
+hi rustModPath ctermfg=7
+hi rustFuncCall ctermfg=7
+hi rustOperator ctermfg=7
+hi rustTrait ctermfg=7
+hi rustSigil ctermfg=7
+hi rustIdentifier ctermfg=7
+hi rustType ctermfg=7
+hi rustEnumVariant ctermfg=7
