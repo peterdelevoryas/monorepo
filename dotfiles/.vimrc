@@ -21,13 +21,8 @@ set formatoptions+=cro
 set wildmode=full
 set t_Co=16
 set notermguicolors
-
-colorscheme solarized
+set noswapfile
 set background=dark
-hi StatusLine       ctermfg=8  ctermbg=12
-hi StatusLineNC     ctermfg=8  ctermbg=12
-hi VertSplit        ctermfg=12 ctermbg=8
-"hi cppSTLNamespace  ctermfg=12
 
 " augroup ft_cpp
 "   autocmd!
@@ -36,4 +31,16 @@ hi VertSplit        ctermfg=12 ctermbg=8
 "   autocmd Syntax cpp hi cFunctionName ctermfg=5
 " augroup end
 
-set noswapfile
+hi Type ctermfg=1
+hi StatusLine ctermfg=0 ctermbg=7
+hi StatusLineNC ctermfg=0 ctermbg=7
+hi VertSplit ctermfg=0 ctermbg=7
+hi String ctermfg=6
+hi Number ctermfg=4
+hi Constant ctermfg=4
+hi Statement ctermfg=1
+hi Special ctermfg=4
+hi Comment ctermfg=8
+hi PreProc ctermfg=7
+hi Include ctermfg=1
+hi cErrInParen ctermfg=7
