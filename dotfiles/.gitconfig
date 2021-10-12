@@ -1,0 +1,5 @@
+[user]
+  name = Peter Delevoryas
+  email = pdel@fb.com
+[format]
+  pretty = "format:%C(yellow)%h%C(reset)%C(blue)%d%C(reset) %s"
