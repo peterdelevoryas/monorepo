@@ -30,9 +30,9 @@ set background=dark
 "   autocmd Syntax cpp hi cFunctionName ctermfg=5
 " augroup end
 
-augroup ft_c
+augroup ft_rust
   autocmd!
-  autocmd Syntax c syn keyword Statement let
+  autocmd Syntax rust syn keyword Statement ret
 augroup end
 
 hi Type ctermfg=1
@@ -62,3 +62,6 @@ hi rustSigil ctermfg=7
 hi rustIdentifier ctermfg=7
 hi rustType ctermfg=7
 hi rustEnumVariant ctermfg=7
+hi rustStorage ctermfg=7
+
+hi cOctalError ctermfg=0 ctermbg=1
