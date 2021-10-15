@@ -12,7 +12,7 @@ set smartcase
 set ignorecase
 set smartindent
 set cinoptions=(0
-set sts=4 ts=4 sw=4 expandtab
+set sts=2 ts=2 sw=2 expandtab
 set fillchars+=stl:-
 set fillchars+=stlnc:-
 set hlsearch
@@ -25,6 +25,9 @@ set background=dark
 
 " Settings for Solarized
 colorscheme solarized
+hi StatusLine ctermfg=8 ctermbg=12
+hi StatusLineNC ctermfg=8 ctermbg=12
+hi VertSplit ctermfg=12 ctermbg=8
 
 " Settings for Github Dark
 "augroup ft_rust
