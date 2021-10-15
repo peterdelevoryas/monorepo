@@ -63,5 +63,7 @@ hi rustIdentifier ctermfg=7
 hi rustType ctermfg=7
 hi rustEnumVariant ctermfg=7
 hi rustStorage ctermfg=7
+hi rustLifetime ctermfg=7
+hi rustSelf ctermfg=7
 
 hi cOctalError ctermfg=0 ctermbg=1
