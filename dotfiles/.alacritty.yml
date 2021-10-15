@@ -11,7 +11,7 @@ font:
     y: 10
   normal:
     family: Menlo
-  size: 16
+  size: 18
 
 cursor:
   style: Block
