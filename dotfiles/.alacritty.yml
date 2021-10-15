@@ -16,28 +16,57 @@ font:
 cursor:
   style: Block
 
-# The 'Dark dimmed' colorscheme from Github.
+# Colors (Solarized Dark)
 colors:
+  # Default colors
   primary:
-    background: '#2d333b'
-    background: '#22272e'
-    foreground: '#adbac7'
+    background: '0x002b36'
+    foreground: '0x839496'
+
+  # Normal colors
   normal:
-    black:   '#2d333b'
-    black:   '#22272e'
-    red:     '#f47067'
-    green:   '#8ddb8c'
-    yellow:  '#f69d50'
-    blue:    '#6cb6ff'
-    magenta: '#dcbdfb'
-    cyan:    '#96d0ff'
-    white:   '#adbac7'
+    black:   '0x073642'
+    red:     '0xdc322f'
+    green:   '0x859900'
+    yellow:  '0xb58900'
+    blue:    '0x268bd2'
+    magenta: '0xd33682'
+    cyan:    '0x2aa198'
+    white:   '0xeee8d5'
+
+  # Bright colors
   bright:
-    black:   '#768390'
-    red:     '#f47067'
-    green:   '#8ddb8c'
-    yellow:  '#f69d50'
-    blue:    '#6cb6ff'
-    magenta: '#dcbdfb'
-    cyan:    '#96d0ff'
-    white:   '#adbac7'
+    black:   '0x002b36'
+    red:     '0xcb4b16'
+    green:   '0x586e75'
+    yellow:  '0x657b83'
+    blue:    '0x839496'
+    magenta: '0x6c71c4'
+    cyan:    '0x93a1a1'
+    white:   '0xfdf6e3'
+
+## The 'Dark dimmed' colorscheme from Github.
+#colors:
+#  primary:
+#    background: '#2d333b'
+#    background: '#22272e'
+#    foreground: '#adbac7'
+#  normal:
+#    black:   '#2d333b'
+#    black:   '#22272e'
+#    red:     '#f47067'
+#    green:   '#8ddb8c'
+#    yellow:  '#f69d50'
+#    blue:    '#6cb6ff'
+#    magenta: '#dcbdfb'
+#    cyan:    '#96d0ff'
+#    white:   '#adbac7'
+#  bright:
+#    black:   '#768390'
+#    red:     '#f47067'
+#    green:   '#8ddb8c'
+#    yellow:  '#f69d50'
+#    blue:    '#6cb6ff'
+#    magenta: '#dcbdfb'
+#    cyan:    '#96d0ff'
+#    white:   '#adbac7'
