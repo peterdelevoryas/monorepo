@@ -1,9 +1,7 @@
 #![allow(dead_code)]
 
-mod obj;
-
-use obj::Obj;
+mod tga;
 
 fn main() {
-    let obj = Obj::from_file("head.obj\0");
+    let image = tga::Image::new(1000, 1000);
 }
