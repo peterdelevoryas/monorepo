@@ -51,10 +51,16 @@ colors:
   primary:
     background: '#2d333b'
     background: '#22272e'
+    background: '#202124'
+    background: '#171717'
     foreground: '#adbac7'
+    foreground: '#bdc1c6'
+    foreground: '#999da2'
   normal:
     black:   '#2d333b'
     black:   '#22272e'
+    black:   '#202124'
+    black:   '#171717'
     red:     '#f47067'
     green:   '#8ddb8c'
     yellow:  '#f69d50'
@@ -62,8 +68,11 @@ colors:
     magenta: '#dcbdfb'
     cyan:    '#96d0ff'
     white:   '#adbac7'
+    white:   '#bdc1c6'
+    white:   '#999da2'
   bright:
     black:   '#768390'
+    black:   '#999da2'
     red:     '#f47067'
     green:   '#8ddb8c'
     yellow:  '#f69d50'

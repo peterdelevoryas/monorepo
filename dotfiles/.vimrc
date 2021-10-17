@@ -12,7 +12,7 @@ set smartcase
 set ignorecase
 set smartindent
 set cinoptions=(0
-set sts=2 ts=2 sw=2 expandtab
+set sts=4 ts=4 sw=4 expandtab
 set fillchars+=stl:-
 set fillchars+=stlnc:-
 set hlsearch
@@ -35,18 +35,19 @@ augroup ft_rust
   autocmd Syntax rust syn keyword Statement ret
 augroup end
 
-hi Type ctermfg=1
+hi Type ctermfg=7
 hi StatusLine ctermfg=0 ctermbg=7
 hi StatusLineNC ctermfg=0 ctermbg=7
 hi VertSplit ctermfg=0 ctermbg=7
-hi String ctermfg=6
-hi Number ctermfg=4
-hi Constant ctermfg=4
-hi Statement ctermfg=1
-hi Special ctermfg=4
+hi String ctermfg=7
+hi Number ctermfg=7
+hi Constant ctermfg=7
+hi Statement ctermfg=7
+hi Special ctermfg=7
 hi Comment ctermfg=8
 hi PreProc ctermfg=7
-hi Include ctermfg=1
+hi Include ctermfg=7
+hi cIncluded ctermfg=7
 hi cErrInParen ctermfg=7
 hi NonText ctermfg=0
 hi MatchParen ctermbg=8
@@ -67,3 +68,6 @@ hi rustLifetime ctermfg=7
 hi rustSelf ctermfg=7
 
 hi cOctalError ctermfg=0 ctermbg=1
+
+hi markdownH2 ctermfg=7
+hi markdownError ctermfg=7
