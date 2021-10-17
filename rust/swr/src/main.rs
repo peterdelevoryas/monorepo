@@ -1,10 +1,9 @@
-#[macro_use]
-mod cstr;
+#![allow(dead_code)]
+
 mod obj;
 
-use crate::obj::Obj;
+use obj::Obj;
 
 fn main() {
-    let path = cstr!("head.obj");
-    let obj = Obj::from_file(path);
+    let obj = Obj::from_file("head.obj\0");
 }

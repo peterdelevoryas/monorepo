@@ -68,9 +68,11 @@ macro_rules! libc_panic {
     })
 }
 
-fn mmap_read_only(path: &CStr) -> MmapFile {
+fn mmap_read_only(path: &str) -> MmapFile {
+    debug_assert_eq!(path.chars().last().unwrap(), '\0');
     unsafe {
-        let fd = open(path.as_ptr(), O_RDONLY | O_CLOEXEC);
+        let path_ = path.as_ptr() as *const _;
+        let fd = open(path_, O_RDONLY | O_CLOEXEC);
         if fd == -1 {
             libc_panic!("unable to open {:?}", path);
         }
@@ -90,7 +92,7 @@ fn mmap_read_only(path: &CStr) -> MmapFile {
 }
 
 impl Obj {
-    pub fn from_file(path: &CStr) -> Obj {
+    pub fn from_file(path: &str) -> Obj {
         let file = mmap_read_only(path);
         unimplemented!()
     }
