@@ -50,8 +50,9 @@ hi Include ctermfg=7
 hi cIncluded ctermfg=7
 hi cErrInParen ctermfg=7
 hi NonText ctermfg=0
-hi MatchParen ctermbg=8
+hi MatchParen ctermfg=1 ctermbg=0
 hi cppSTLtype ctermfg=7
+hi Visual ctermfg=0
 
 hi rustFuncName ctermfg=7
 hi rustModPathSep ctermfg=7
