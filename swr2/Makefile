@@ -7,7 +7,10 @@ SOURCES := main.cc math.cc tga.cc obj.cc
 swr: $(HEADERS) $(SOURCES)
 	time $(CXX) $(CXXFLAGS) $(SOURCES) -o $@
 
-.PHONY: test
+.PHONY: test llvm
 
 test: swr
 	./swr
+
+llvm: $(HEADERS) $(SOURCES)
+	$(CXX) -std=gnu++20 -fno-exceptions -ffast-math -O3 -emit-llvm -S $(SOURCES)

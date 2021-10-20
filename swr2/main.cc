@@ -6,29 +6,28 @@
 #include "obj.hh"
 
 using obj::Obj;
-using obj::Vertex;
 using tga::Image;
 using tga::Pixel;
 
 template<typename T>
-T max(T a, T b)
+inline T max(T a, T b)
 {
   return a > b ? a : b;
 }
 
 template<typename T>
-T min(T a, T b)
+inline T min(T a, T b)
 {
   return a < b ? a : b;
 }
 
-struct NDC {
+struct int3 {
   int x;
   int y;
   int z;
 };
 
-static void draw_triangle(Image& image, NDC a, NDC b, NDC c, Pixel color)
+static void draw_triangle(Image& image, int3 a, int3 b, int3 c, Pixel color)
 {
   auto min_x = min(min(a.x, b.x), c.x);
   auto max_x = max(max(a.x, b.x), c.x);
@@ -42,13 +41,13 @@ static void draw_triangle(Image& image, NDC a, NDC b, NDC c, Pixel color)
       if (y >= image.height) {
         continue;
       }
-      auto p = float3(c.x - a.x, b.x - a.x, a.x - x);
-      auto q = float3(c.y - a.y, b.y - a.y, a.y - y);
-      auto s = p.cross(q);
+      auto p = float3{float(c.x - a.x), float(b.x - a.x), float(a.x - x)};
+      auto q = float3{float(c.y - a.y), float(b.y - a.y), float(a.y - y)};
+      auto s = cross(p, q);
       if (fabsf(s.z) < 1.0f) {
         continue;
       }
-      auto t = float3(1.0f - (s.x + s.y) / s.z, s.y / s.z, s.x / s.z);
+      auto t = float3{1.0f - (s.x + s.y) / s.z, s.y / s.z, s.x / s.z};
       if (t.x < 0.0f || t.y < 0.0f || t.z < 0.0f) {
         continue;
       }
@@ -57,12 +56,14 @@ static void draw_triangle(Image& image, NDC a, NDC b, NDC c, Pixel color)
   }
 }
 
-static NDC ndc(Vertex v, uint16_t width, uint16_t height)
+static int3 world_to_screen(float3 v, uint16_t width, uint16_t height)
 {
-  int x = (v.x + 1.0f) * float(width / 2);
-  int y = (v.y + 1.0f) * float(height / 2);
+  auto x = int((v.x + 1.0f) * float(width / 2));
+  auto y = int((v.y + 1.0f) * float(height / 2));
   return {x, y, int(v.z)};
 }
+
+constexpr auto SPOTLIGHT = float3(0.0f, 0.0f, -1.0f);
 
 static void draw_obj(const Obj& obj, Image& image)
 {
@@ -70,13 +71,18 @@ static void draw_obj(const Obj& obj, Image& image)
     auto v0 = obj.vertices[f.v0];
     auto v1 = obj.vertices[f.v1];
     auto v2 = obj.vertices[f.v2];
-    auto n0 = ndc(v0, image.width, image.height);
-    auto n1 = ndc(v1, image.width, image.height);
-    auto n2 = ndc(v2, image.width, image.height);
-    uint8_t r = rand() % 255;
-    uint8_t g = rand() % 255;
-    uint8_t b = rand() % 255;
-    draw_triangle(image, n0, n1, n2, {b, g, r});
+    auto s0 = world_to_screen(v0, image.width, image.height);
+    auto s1 = world_to_screen(v1, image.width, image.height);
+    auto s2 = world_to_screen(v2, image.width, image.height);
+    auto n = cross(v2 - v0, v1 - v0).normalize();
+    auto I = n * SPOTLIGHT;
+    if (I <= 0.0f) {
+      continue;
+    }
+    auto r = uint8_t(I * 255.0f);
+    auto g = uint8_t(I * 255.0f);
+    auto b = uint8_t(I * 255.0f);
+    draw_triangle(image, s0, s1, s2, {b, g, r});
   }
 }
 

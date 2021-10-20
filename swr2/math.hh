@@ -4,9 +4,17 @@
 struct float3 {
   float x, y, z;
 
-  explicit float3(float x, float y, float z) noexcept;
-  float operator*(float3 b) const noexcept;
-  float3 cross(float3 b) const noexcept;
+  constexpr explicit float3(float x, float y, float z) noexcept
+    : x(x), y(y), z(z)
+  {
+    // Nothing to do.
+  }
+  float3 normalize() const noexcept;
 };
+
+float operator*(float3 a, float3 b);
+float3 operator*(float3 a, float s);
+float3 operator-(float3 a, float3 b);
+float3 cross(float3 a, float3 b);
 
 #endif

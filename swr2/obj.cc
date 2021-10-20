@@ -1,12 +1,13 @@
 #include <cstdio>
 #include <cassert>
 #include "obj.hh"
+#include "math.hh"
 
 using namespace obj;
 
 Obj Obj::from_file(const char* path)
 {
-  Vec<Vertex> vertices;
+  Vec<float3> vertices;
   Vec<Face> faces;
 
   vertices.reserve(16);
@@ -25,12 +26,12 @@ Obj Obj::from_file(const char* path)
     }
     switch (line[0]) {
       case 'v': {
-        Vertex v;
-        auto n = sscanf(line, "v %f %f %f", &v.x, &v.y, &v.z);
+        float x, y, z;
+        auto n = sscanf(line, "v %f %f %f", &x, &y, &z);
         if (n != 3) {
           continue;
         }
-        vertices.append(v);
+        vertices.append(float3(x, y, z));
         break;
       }
       case 'f': {

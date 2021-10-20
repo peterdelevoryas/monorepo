@@ -1,5 +1,5 @@
-#ifndef TGA_H
-#define TGA_H
+#ifndef TGA_HH
+#define TGA_HH
 #include <cstdint>
 
 namespace tga {
