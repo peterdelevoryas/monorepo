@@ -12,7 +12,7 @@ set smartcase
 set ignorecase
 set smartindent
 set cinoptions=(0
-set sts=2 ts=2 sw=2 expandtab
+set sts=4 ts=4 sw=4 expandtab
 set fillchars+=stl:-
 set fillchars+=stlnc:-
 set hlsearch
@@ -22,6 +22,7 @@ set t_Co=16
 set notermguicolors
 set noswapfile
 set background=dark
+autocmd FileType cpp setlocal sw=2 ts=2 sts=2 expandtab
 
 " Settings for Solarized
 "colorscheme solarized
@@ -55,6 +56,7 @@ hi StatusLineNC ctermfg=0 ctermbg=7
 hi VertSplit ctermfg=0 ctermbg=7
 hi NonText ctermfg=0
 hi MatchParen ctermfg=1 ctermbg=0
+hi Comment ctermfg=12
 "hi Type ctermfg=7
 "hi String ctermfg=7
 "hi Number ctermfg=7
