@@ -24,24 +24,25 @@ set noswapfile
 set background=dark
 
 " Settings for Solarized
-colorscheme solarized
-hi StatusLine ctermfg=8 ctermbg=12
-hi StatusLineNC ctermfg=8 ctermbg=12
-hi VertSplit ctermfg=12 ctermbg=8
-hi rustFuncName ctermfg=12
-hi rustModPathSep ctermfg=12
-hi rustModPath ctermfg=12
-hi rustFuncCall ctermfg=12
-hi rustOperator ctermfg=12
-hi rustTrait ctermfg=12
-hi rustSigil ctermfg=12
-hi rustIdentifier ctermfg=12
-hi rustType ctermfg=12
-hi rustEnumVariant ctermfg=12
-hi rustStorage ctermfg=12
-hi rustLifetime ctermfg=12
-hi rustSelf ctermfg=12
-hi rustMacro ctermfg=12
+"colorscheme solarized
+"hi StatusLine ctermfg=8 ctermbg=12
+"hi StatusLineNC ctermfg=8 ctermbg=12
+"hi VertSplit ctermfg=12 ctermbg=8
+"hi MatchParen ctermfg=1 ctermbg=8
+"hi rustFuncName ctermfg=12
+"hi rustModPathSep ctermfg=12
+"hi rustModPath ctermfg=12
+"hi rustFuncCall ctermfg=12
+"hi rustOperator ctermfg=12
+"hi rustTrait ctermfg=12
+"hi rustSigil ctermfg=12
+"hi rustIdentifier ctermfg=12
+"hi rustType ctermfg=12
+"hi rustEnumVariant ctermfg=12
+"hi rustStorage ctermfg=12
+"hi rustLifetime ctermfg=12
+"hi rustSelf ctermfg=12
+"hi rustMacro ctermfg=12
 
 " Settings for Github Dark
 augroup ft_rust
@@ -49,10 +50,12 @@ augroup ft_rust
   autocmd Syntax rust syn keyword Statement ret
 augroup end
 
+hi StatusLine ctermfg=0 ctermbg=7
+hi StatusLineNC ctermfg=0 ctermbg=7
+hi VertSplit ctermfg=0 ctermbg=7
+hi NonText ctermfg=0
+hi MatchParen ctermfg=1 ctermbg=0
 "hi Type ctermfg=7
-"hi StatusLine ctermfg=0 ctermbg=7
-"hi StatusLineNC ctermfg=0 ctermbg=7
-"hi VertSplit ctermfg=0 ctermbg=7
 "hi String ctermfg=7
 "hi Number ctermfg=7
 "hi Constant ctermfg=7
@@ -63,8 +66,6 @@ augroup end
 "hi Include ctermfg=7
 "hi cIncluded ctermfg=7
 "hi cErrInParen ctermfg=7
-"hi NonText ctermfg=0
-"hi MatchParen ctermfg=1 ctermbg=0
 "hi cppSTLtype ctermfg=7
 "hi Visual ctermfg=0
 "

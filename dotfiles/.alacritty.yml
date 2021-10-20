@@ -7,8 +7,8 @@ window:
     y: 10
 
 font:
-  offset:
-    y: 10
+  #offset:
+    #y: 10
   normal:
     family: Menlo
   size: 18
@@ -16,35 +16,65 @@ font:
 cursor:
   style: Block
 
-# Colors (Solarized Dark)
+# Colors (Builtin Dark)
 colors:
-  # Default colors
-  primary:
-    background: '0x002b36'
-    foreground: '0x839496'
-
-  # Normal colors
-  normal:
-    black:   '0x073642'
-    black:   '0x002b36'
-    red:     '0xdc322f'
-    green:   '0x859900'
-    yellow:  '0xb58900'
-    blue:    '0x268bd2'
-    magenta: '0xd33682'
-    cyan:    '0x2aa198'
-    white:   '0xeee8d5'
-
-  # Bright colors
   bright:
-    black:   '0x002b36'
-    red:     '0xcb4b16'
-    green:   '0x586e75'
-    yellow:  '0x657b83'
-    blue:    '0x839496'
-    magenta: '0x6c71c4'
-    cyan:    '0x93a1a1'
-    white:   '0xfdf6e3'
+    black: '#555555'
+    blue: '#5555ff'
+    cyan: '#55ffff'
+    green: '#55ff55'
+    magenta: '#ff55ff'
+    red: '#ff5555'
+    white: '#ffffff'
+    yellow: '#ffff55'
+  cursor:
+    cursor: '#bbbbbb'
+    text: '#ffffff'
+  normal:
+    black: '#000000'
+    blue: '#0000bb'
+    cyan: '#00bbbb'
+    green: '#00bb00'
+    magenta: '#bb00bb'
+    red: '#bb0000'
+    white: '#bbbbbb'
+    yellow: '#bbbb00'
+  primary:
+    background: '#000000'
+    foreground: '#bbbbbb'
+  selection:
+    background: '#b5d5ff'
+    text: '#000000'
+
+# Colors (Solarized Dark)
+#colors:
+#  # Default colors
+#  primary:
+#    background: '0x002b36'
+#    foreground: '0x839496'
+#
+#  # Normal colors
+#  normal:
+#    black:   '0x073642'
+#    black:   '0x002b36'
+#    red:     '0xdc322f'
+#    green:   '0x859900'
+#    yellow:  '0xb58900'
+#    blue:    '0x268bd2'
+#    magenta: '0xd33682'
+#    cyan:    '0x2aa198'
+#    white:   '0xeee8d5'
+#
+#  # Bright colors
+#  bright:
+#    black:   '0x002b36'
+#    red:     '0xcb4b16'
+#    green:   '0x586e75'
+#    yellow:  '0x657b83'
+#    blue:    '0x839496'
+#    magenta: '0x6c71c4'
+#    cyan:    '0x93a1a1'
+#    white:   '0xfdf6e3'
 
 #colors:
 #  primary:
