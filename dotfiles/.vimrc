@@ -57,6 +57,8 @@ hi VertSplit ctermfg=0 ctermbg=7
 hi NonText ctermfg=0
 hi MatchParen ctermfg=1 ctermbg=0
 hi Comment ctermfg=12
+hi Type ctermfg=12
+hi Statement ctermfg=10
 "hi Type ctermfg=7
 "hi String ctermfg=7
 "hi Number ctermfg=7

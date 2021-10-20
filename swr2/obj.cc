@@ -55,3 +55,9 @@ Obj Obj::from_file(const char* path)
 
   return {vertices, faces};
 }
+
+void Obj::free()
+{
+  vertices.free();
+  faces.free();
+}

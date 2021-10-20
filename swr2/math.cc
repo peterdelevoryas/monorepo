@@ -11,7 +11,7 @@ float float3::operator*(float3 b) const noexcept
   return a.x * b.x + a.y * b.y + a.z * b.z;
 }
 
-float3 float3::operator^(float3 b) const noexcept
+float3 float3::cross(float3 b) const noexcept
 {
   auto a = *this;
   auto x = a.y * b.z - a.z * b.y;

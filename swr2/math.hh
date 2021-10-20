@@ -6,7 +6,7 @@ struct float3 {
 
   explicit float3(float x, float y, float z) noexcept;
   float operator*(float3 b) const noexcept;
-  float3 operator^(float3 b) const noexcept;
+  float3 cross(float3 b) const noexcept;
 };
 
 #endif

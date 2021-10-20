@@ -44,7 +44,7 @@ static void draw_triangle(Image& image, NDC a, NDC b, NDC c, Pixel color)
       }
       auto p = float3(c.x - a.x, b.x - a.x, a.x - x);
       auto q = float3(c.y - a.y, b.y - a.y, a.y - y);
-      auto s = p ^ q;
+      auto s = p.cross(q);
       if (fabsf(s.z) < 1.0f) {
         continue;
       }
@@ -84,6 +84,7 @@ int main(int argc, char** argv) {
   auto obj = Obj::from_file("head.obj");
   auto image = Image::allocate(1000, 1000);
   draw_obj(obj, image);
+  obj.free();
   image.write("out.tga");
   image.free();
 

@@ -18,6 +18,7 @@ struct Obj {
   Vec<Face> faces;
 
   static Obj from_file(const char* path);
+  void free();
 };
 
 };
