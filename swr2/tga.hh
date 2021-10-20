@@ -1,7 +1,6 @@
 #ifndef TGA_H
 #define TGA_H
 #include <cstdint>
-#include <string_view>
 
 namespace tga {
 
@@ -24,9 +23,12 @@ struct Image {
   // Height of the image, in pixel units.
   uint32_t height;
 
-  explicit Image(uint32_t width, uint32_t height) noexcept;
+  // Allocate a pixel array of width x height pixels.
+  static Image allocate(uint32_t width, uint32_t height);
+  // Free the pixel array associated with this image.
   void free();
-  void write(std::string_view path);
+  // Create a file and write the TGA header and pixel data.
+  void write(const char* path);
 };
 
 };
