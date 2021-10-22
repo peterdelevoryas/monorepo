@@ -48,7 +48,7 @@ autocmd FileType cpp setlocal sw=2 ts=2 sts=2 expandtab
 " Settings for Github Dark
 augroup ft_rust
   autocmd!
-  autocmd Syntax rust syn keyword Statement ret
+  autocmd Syntax rust syn keyword Statement function
   autocmd Syntax rust hi Statement ctermfg=12
 augroup end
 
