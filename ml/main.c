@@ -96,17 +96,20 @@ int main(int argc, char** argv)
   int m = Len(x);
   int n = Len(w);
   int i;
+  FILE* f;
   assert(Len(y) == m);
   assert(Len(x[0]) == n);
 
   GenerateData(m, x, y);
 
-  // Print out the generated data set.
-  printf("x, y\n");
+  // Write the generated data set to a csv.
+  f = fopen("in.csv", "w");
+  fprintf(f, "x,y\n");
   for (i = 0; i < m; i++)
   {
-    printf("%6.2f, %6.2f\n", x[i][1], y[i]);
+    fprintf(f, "%f,%f\n", x[i][1], y[i]);
   }
+  fclose(f);
 
   BatchGradientDescent(n, w, m, x, y, a);
 
@@ -117,11 +120,13 @@ int main(int argc, char** argv)
   //   printf("%6.2f\n", w[i]);
   // }
 
-  // Print out the predictions from the model.
-  printf("x, predicted_y\n");
+  // Write the predictions to a csv.
+  f = fopen("out.csv", "w");
+  fprintf(f, "x,y^\n");
   for (i = 0; i < m; i++)
   {
     float prediction = DotProduct(n, w, x[i]);
-    printf("%6.2f, %6.2f\n", x[i][1], prediction);
+    fprintf(f, "%f,%f\n", x[i][1], prediction);
   }
+  fclose(f);
 }
