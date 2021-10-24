@@ -2,9 +2,7 @@ function PrintHighlighter()
   echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans<' . synIDattr(synID(line("."),col("."),0),"name") . "> lo<" . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") . ">"
 endfunction
 
-if has("autocmd")
-  au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
-endif
+au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
 
 filetype plugin indent on
 syntax on
@@ -12,7 +10,6 @@ set smartcase
 set ignorecase
 set smartindent
 set cinoptions=(0
-set sts=4 ts=4 sw=4 expandtab
 set fillchars+=stl:-
 set fillchars+=stlnc:-
 set hlsearch
@@ -22,6 +19,7 @@ set t_Co=16
 set notermguicolors
 set noswapfile
 set background=dark
+set sts=4 ts=8 sw=4 expandtab
 autocmd FileType cpp setlocal sw=2 ts=2 sts=2 expandtab
 
 " Settings for Solarized
@@ -44,6 +42,7 @@ hi rustLifetime ctermfg=12
 hi rustSelf ctermfg=12
 hi rustMacro ctermfg=12
 hi rustType ctermfg=3
+hi ColorColumn ctermbg=10
 
 " Settings for Github Dark
 augroup ft_rust
