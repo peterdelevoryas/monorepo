@@ -21,6 +21,7 @@ set noswapfile
 set background=dark
 set sts=4 ts=8 sw=4 expandtab
 autocmd FileType cpp setlocal sw=2 ts=2 sts=2 expandtab
+autocmd Filetype c setlocal sw=2 ts=2 sts=2 expandtab
 
 " Settings for Solarized
 colorscheme solarized
