@@ -8,6 +8,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <assert.h>
+#include <math.h>
 
 #define Len(a) (sizeof(a) / sizeof(a[0]))
 
@@ -87,7 +88,8 @@ void BatchGradientDescent(int n, float w[n], int m, float x[m][n], float y[m], f
   // printf("%s: stopped at %d iterations\n", __func__, k);
 }
 
-int main(int argc, char** argv)
+static
+void LinearRegressionTest(void)
 {
   float x[32][2];
   float y[32];
@@ -129,4 +131,81 @@ int main(int argc, char** argv)
     fprintf(f, "%f,%f\n", x[i][1], prediction);
   }
   fclose(f);
+}
+
+static
+void tga_uncompressed_grayscale(const uint8_t* pixels, uint16_t height, uint16_t width, const char* path)
+{
+  FILE* f;
+  uint8_t header[18];
+
+  header[0] = 0;              // No ID included.
+  header[1] = 0;              // No color map included.
+  header[2] = 3;              // Uncompressed grayscale image.
+  header[3] = 0;              // First color map index (none), lower 8 bits.
+  header[4] = 0;              // First color map index (none), upper 8 bits.
+  header[5] = 0;              // Color map length (zero), lower 8 bits.
+  header[6] = 0;              // Color map length (zero), upper 8 bits.
+  header[7] = 0;              // Color map entry size (zero).
+  header[8] = 0;              // X origin, lower 8 bits.
+  header[9] = 0;              // X origin, upper 8 bits.
+  header[10] = 0;             // Y origin, lower 8 bits.
+  header[11] = 0;             // Y origin, upper 8 bits.
+  header[12] = width & 0xFF;  // Width, lower 8 bits.
+  header[13] = width >> 8;    // Width, upper 8 bits.
+  header[14] = height & 0xFF; // Height, lower 8 bits.
+  header[15] = height >> 8;   // Height, upper 8 bits.
+  header[16] = 8;             // Pixel depth (bits per pixel).
+  header[17] = 0x20;          // Alpha-channel depth and image orientation.
+
+  f = fopen(path, "w");
+  fwrite(header, sizeof(header), 1, f);
+  fwrite(pixels, 1, height * width, f);
+  fclose(f);
+}
+
+int main(int argc, char** argv)
+{
+  uint32_t header[4];
+  static uint8_t labels[N];
+  static uint8_t images[N][H][W];
+  FILE* f;
+  int m = Len(labels);
+  int h = Len(images[0]);
+  assert(m == Len(images));
+  assert(h == Len(images[0][0]));
+
+  f = fopen("train-labels-idx1-ubyte", "r");
+  fread(header, sizeof(uint32_t), 2, f);
+  header[0] = __builtin_bswap32(header[0]);
+  header[1] = __builtin_bswap32(header[1]);
+  assert(header[0] == 0x00000801);
+  assert(header[1] == m);
+  fread(labels, sizeof(uint8_t), m, f);
+  fclose(f);
+
+  f = fopen("train-images-idx3-ubyte", "r");
+  fread(header, sizeof(uint32_t), 4, f);
+  header[0] = __builtin_bswap32(header[0]);
+  header[1] = __builtin_bswap32(header[1]);
+  header[2] = __builtin_bswap32(header[2]);
+  header[3] = __builtin_bswap32(header[3]);
+  assert(header[0] == 0x00000803);
+  assert(header[1] == m);
+  assert(header[2] == h);
+  assert(header[3] == h);
+  fread(images, h * h, m, f);
+  fclose(f);
+
+  //    0  ... 28 ... 56 ... 128
+  // 0  +-----++-----+
+  // 1  |     ||     |
+  // 2  +-----++-----+
+  // 3
+  // 4
+
+  // for (i = 0; i < 10; i++)
+  //   printf("%d ", labels[i]);
+  // printf("\n");
+  // tga_uncompressed_grayscale(images, height * 10, width, "images.tga");
 }
