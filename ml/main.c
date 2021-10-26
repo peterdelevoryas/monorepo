@@ -121,7 +121,7 @@ static void linear_regression_test(void) {
   fclose(f);
 }
 
-static void tga_uncompressed_grayscale(const uint8_t* pixels, uint16_t height,
+static void tga_uncompressed_grayscale(const void* pixels, uint16_t height,
                                        uint16_t width, const char* path) {
   FILE* f;
   uint8_t header[18];
@@ -160,6 +160,8 @@ int main(int argc, char** argv) {
   int m = len(labels);
   int h = len(images[0]);
   int w = len(images[0][0]);
+  int i, j, k, l;
+
   assert(m == len(images));
   assert(sizeof(tga) == sizeof(images));
 
@@ -184,6 +186,14 @@ int main(int argc, char** argv) {
   assert(header[3] == h);
   fread(images, w * h, m, f);
   fclose(f);
+
+  for (i = 0; i < 200; i++)
+  for (j = 0; j < 28; j++)
+  for (k = 0; k < 300; k++)
+  for (l = 0; l < 28; l++) {
+    tga[i][j][k][l] = images[i * 300 + k][j][l];
+  }
+  tga_uncompressed_grayscale(tga, 200 * 28, 300 * 28, "images.tga");
 
   //    0  ... 28 ... 56 ... 128
   // 0  +-----++-----+
