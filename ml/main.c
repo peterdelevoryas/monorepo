@@ -187,6 +187,11 @@ int main(int argc, char** argv) {
   fread(images, w * h, m, f);
   fclose(f);
 
+  for (i = 0; i < 10; i++) {
+    printf("%d ", labels[i]);
+  }
+  printf("\n");
+
   for (i = 0; i < 200; i++)
   for (j = 0; j < 28; j++)
   for (k = 0; k < 300; k++)
