@@ -10,15 +10,14 @@
 #include <assert.h>
 #include <math.h>
 
-#define Len(a) (sizeof(a) / sizeof(a[0]))
+#define len(a) (sizeof(a) / sizeof(a[0]))
 
 // This generates some input data from the following function: f(x) = x
 // It just adds some random noise to each point to make it harder to
 // train a model. But if you train a model, if should produce a line
 // roughly equivalent to "y = x".
 static
-void GenerateData(int m, float x[m][2], float y[m])
-{
+void generate_data(int m, float x[m][2], float y[m]) {
   uint8_t* e = malloc(sizeof(uint8_t) * m);
   FILE* f = fopen("/dev/urandom", "r");
   assert(f);
@@ -27,8 +26,7 @@ void GenerateData(int m, float x[m][2], float y[m])
 
   // f(x) = x
   // y[i] = f(x[i]) + e[i]
-  for (int i = 0; i < m; i++)
-  {
+  for (int i = 0; i < m; i++) {
     float e_i = (float)(e[i] - 128) / 16.0f;
     x[i][0] = 1.0f;
     x[i][1] = -m / 2 + i;
@@ -38,12 +36,9 @@ void GenerateData(int m, float x[m][2], float y[m])
   free(e);
 }
 
-static
-float DotProduct(int n, float a[n], float b[n])
-{
+static float dot_product(int n, float a[n], float b[n]) {
   float product = 0.0f;
-  for (int i = 0; i < n; i++)
-  {
+  for (int i = 0; i < n; i++) {
     product += a[i] * b[i];
   }
   return product;
@@ -52,8 +47,7 @@ float DotProduct(int n, float a[n], float b[n])
 // Gradient descent using a modified residual sum of squares as the error function.
 // Uses the full training set for each parameter update.
 static
-void BatchGradientDescent(int n, float w[n], int m, float x[m][n], float y[m], float a)
-{
+void batch_gradient_descent(int n, float w[n], int m, float x[m][n], float y[m], float a) {
   int i, j, k;
 
   // Initialize parameters to zero to start with.
@@ -62,24 +56,22 @@ void BatchGradientDescent(int n, float w[n], int m, float x[m][n], float y[m], f
   float* w_ = malloc(sizeof(*w) * n);
   memcpy(w_, w, sizeof(*w) * n);
 
-  for (k = 0; k < 10000; k++)
-  {
+  for (k = 0; k < 10000; k++) {
     // Update the parameters.
-    for (i = 0; i < n; i++)
-    {
+    for (i = 0; i < n; i++) {
       // g = the gradient at point "w".
       float g = 0.0f;
-      for (j = 0; j < m; j++)
-      {
-        g += (DotProduct(n, w, x[j]) - y[j]) * x[j][i];
+      for (j = 0; j < m; j++) {
+        g += (dot_product(n, w, x[j]) - y[j]) * x[j][i];
       }
       g /= m;
       w_[i] = w[i] - a * g;
     }
 
     // Check for convergence.
-    if (memcmp(w, w_, sizeof(*w) * n) == 0)
+    if (memcmp(w, w_, sizeof(*w) * n) == 0) {
       break;
+    }
     memcpy(w, w_, sizeof(*w) * n);
   }
 
@@ -88,54 +80,49 @@ void BatchGradientDescent(int n, float w[n], int m, float x[m][n], float y[m], f
   // printf("%s: stopped at %d iterations\n", __func__, k);
 }
 
-static
-void LinearRegressionTest(void)
-{
+static void linear_regression_test(void) {
   float x[32][2];
   float y[32];
   float w[2];
   float a = 0.01f;
-  int m = Len(x);
-  int n = Len(w);
+  float p;
+  int m = len(x);
+  int n = len(w);
   int i;
   FILE* f;
-  assert(Len(y) == m);
-  assert(Len(x[0]) == n);
+  assert(len(y) == m);
+  assert(len(x[0]) == n);
 
-  GenerateData(m, x, y);
+  generate_data(m, x, y);
 
   // Write the generated data set to a csv.
   f = fopen("in.csv", "w");
   fprintf(f, "x,y\n");
-  for (i = 0; i < m; i++)
-  {
+  for (i = 0; i < m; i++) {
     fprintf(f, "%f,%f\n", x[i][1], y[i]);
   }
   fclose(f);
 
-  BatchGradientDescent(n, w, m, x, y, a);
+  batch_gradient_descent(n, w, m, x, y, a);
 
   // Print out the parameters after training.
   // printf("w\n");
-  // for (i = 0; i < n; i++)
-  // {
+  // for (i = 0; i < n; i++) {
   //   printf("%6.2f\n", w[i]);
   // }
 
   // Write the predictions to a csv.
   f = fopen("out.csv", "w");
   fprintf(f, "x,y^\n");
-  for (i = 0; i < m; i++)
-  {
-    float prediction = DotProduct(n, w, x[i]);
-    fprintf(f, "%f,%f\n", x[i][1], prediction);
+  for (i = 0; i < m; i++) {
+    p = dot_product(n, w, x[i]);
+    fprintf(f, "%f,%f\n", x[i][1], p);
   }
   fclose(f);
 }
 
-static
-void tga_uncompressed_grayscale(const uint8_t* pixels, uint16_t height, uint16_t width, const char* path)
-{
+static void tga_uncompressed_grayscale(const uint8_t* pixels, uint16_t height,
+                                       uint16_t width, const char* path) {
   FILE* f;
   uint8_t header[18];
 
@@ -164,16 +151,17 @@ void tga_uncompressed_grayscale(const uint8_t* pixels, uint16_t height, uint16_t
   fclose(f);
 }
 
-int main(int argc, char** argv)
-{
+int main(int argc, char** argv) {
   uint32_t header[4];
-  static uint8_t labels[N];
-  static uint8_t images[N][H][W];
+  static uint8_t labels[60000];
+  static uint8_t images[60000][28][28];
+  static uint8_t tga[200][28][300][28];
   FILE* f;
-  int m = Len(labels);
-  int h = Len(images[0]);
-  assert(m == Len(images));
-  assert(h == Len(images[0][0]));
+  int m = len(labels);
+  int h = len(images[0]);
+  int w = len(images[0][0]);
+  assert(m == len(images));
+  assert(sizeof(tga) == sizeof(images));
 
   f = fopen("train-labels-idx1-ubyte", "r");
   fread(header, sizeof(uint32_t), 2, f);
@@ -194,7 +182,7 @@ int main(int argc, char** argv)
   assert(header[1] == m);
   assert(header[2] == h);
   assert(header[3] == h);
-  fread(images, h * h, m, f);
+  fread(images, w * h, m, f);
   fclose(f);
 
   //    0  ... 28 ... 56 ... 128
