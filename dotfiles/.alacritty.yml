@@ -12,6 +12,8 @@ font:
     family: Menlo
     family: Consolas
     family: Roboto Mono
+  bold:
+    style: Regular
   size: 24
 
 cursor:

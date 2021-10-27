@@ -4,6 +4,8 @@ endfunction
 
 au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
 
+autocmd BufNewFile,BufRead *.pd setfiletype rust
+
 filetype plugin indent on
 syntax on
 set smartcase
@@ -25,9 +27,9 @@ autocmd Filetype c setlocal sw=2 ts=2 sts=2 expandtab
 
 augroup ft_rust
   autocmd!
-  autocmd Syntax rust syn keyword Statement function
-  autocmd Syntax rust hi Statement ctermfg=2
-  autocmd Syntax rust hi PreProc ctermfg=12
+  "autocmd Syntax rust syn keyword Statement function
+  "autocmd Syntax rust hi Statement ctermfg=2
+  "autocmd Syntax rust hi PreProc ctermfg=12
 augroup end
 
 hi StatusLine ctermfg=0 ctermbg=7
@@ -36,20 +38,23 @@ hi VertSplit ctermfg=0 ctermbg=7
 hi NonText ctermfg=0
 hi MatchParen ctermfg=2 ctermbg=0
 
-hi rustFuncName ctermfg=7
-hi rustModPathSep ctermfg=7
-hi rustModPath ctermfg=7
-hi rustFuncCall ctermfg=7
-hi rustOperator ctermfg=7
-hi rustTrait ctermfg=7
-hi rustSigil ctermfg=7
-hi rustIdentifier ctermfg=7
-hi rustType ctermfg=7
-hi rustEnumVariant ctermfg=7
-hi rustStorage ctermfg=7
-hi rustLifetime ctermfg=7
-hi rustSelf ctermfg=7
-hi rustEscape ctermfg=13
+hi rustModPath      ctermfg=7
+hi rustModPathSep   ctermfg=7
+hi rustOperator     ctermfg=7
+hi rustFuncName     ctermfg=7
+hi rustFuncCall     ctermfg=7
+"hi rustFuncName ctermfg=7
+"hi rustModPath ctermfg=7
+"hi rustFuncCall ctermfg=7
+"hi rustTrait ctermfg=7
+"hi rustSigil ctermfg=7
+"hi rustIdentifier ctermfg=7
+"hi rustType ctermfg=7
+"hi rustEnumVariant ctermfg=7
+"hi rustStorage ctermfg=7
+"hi rustLifetime ctermfg=7
+"hi rustSelf ctermfg=7
+"hi rustEscape ctermfg=13
 
 hi cOctalError ctermfg=0 ctermbg=1
 
