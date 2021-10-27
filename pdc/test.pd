@@ -7,5 +7,5 @@ fn main(argc: i32, argv: **i8) -> i32 {
     x = y;
     y = z;
     printf("%d %d %d", x, y, z);
-    ret 0;
+    return 0;
 }

@@ -2,10 +2,10 @@ target := ml
 
 all: $(target)
 
-CFLAGS := -std=c11 -g -O2 -ffast-math -fsanitize=address -DDEBUG -pedantic -Wall
+CXXFLAGS := -std=c++20 -g -O2 -ffast-math -fno-exceptions -fsanitize=address -DDEBUG -pedantic -Wall
 
-$(target): main.c
-	time $(CC) $(CFLAGS) -o $@ $<
+$(target): main.cpp
+	time $(CXX) $(CXXFLAGS) -o $@ $<
 
 .PHONY: test
 

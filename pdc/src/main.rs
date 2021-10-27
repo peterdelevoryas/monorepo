@@ -4,7 +4,7 @@ use std::fs;
 enum Token {
     Fn,
     Let,
-    Ret,
+    Return,
     I8,
     I16,
     I32,
