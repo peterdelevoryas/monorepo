@@ -9,12 +9,12 @@ window:
 font:
   normal:
     style: Regular
-    family: Menlo
     family: Roboto Mono
     family: Consolas
+    family: Menlo
   bold:
     style: Regular
-  size: 20
+  size: 16
 
 cursor:
   style: Block
