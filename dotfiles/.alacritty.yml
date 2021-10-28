@@ -1,6 +1,6 @@
 window:
   dimensions:
-    columns: 100
+    columns: 80
     lines: 60
   padding:
     x: 10
@@ -9,12 +9,12 @@ window:
 font:
   normal:
     style: Regular
+    family: Menlo
     family: Roboto Mono
     family: Consolas
-    family: Menlo
   bold:
     style: Regular
-  size: 16
+  size: 20
 
 cursor:
   style: Block

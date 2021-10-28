@@ -44,10 +44,11 @@ static float dot_product(int n, float a[n], float b[n]) {
   return product;
 }
 
-// Gradient descent using a modified residual sum of squares as the error function.
-// Uses the full training set for each parameter update.
+// Gradient descent using a modified residual sum of squares as the error
+// function. Uses the full training set for each parameter update.
 static
-void batch_gradient_descent(int n, float w[n], int m, float x[m][n], float y[m], float a) {
+void batch_gradient_descent(int n, float w[n], int m,
+                            float x[m][n], float y[m], float a) {
   int i, j, k;
 
   // Initialize parameters to zero to start with.
@@ -152,6 +153,8 @@ static void tga_uncompressed_grayscale(const void* pixels, uint16_t height,
 }
 
 int main(int argc, char** argv) {
+  linear_regression_test();
+
   uint32_t header[4];
   static uint8_t labels[60000];
   static uint8_t images[60000][28][28];
