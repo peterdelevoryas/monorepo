@@ -1,6 +1,6 @@
 #pragma once
-
 #include <stdint.h>
+#include <stdbool.h>
 
 #define loop for (;;)
 #define int(x) ((int)(x))
@@ -12,3 +12,5 @@ typedef uint16_t    u16;
 typedef uint32_t    u32;
 typedef uint64_t    u64;
 typedef const char* String;
+
+bool string_equals(String a, String b);

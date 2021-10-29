@@ -1,24 +1,17 @@
 #include <stdio.h>
-#include <string.h>
-#include <stdbool.h>
 #include "common.h"
 #include "parser.h"
-
-static void compile(String path)
-{
-    Parser p = parser_init(path);
-    parser_debug_tokens(&p);
-    parser_free(&p);
-}
 
 static void usage()
 {
     printf("usage: pdc [-h] file...\n");
 }
 
-static bool string_equals(String a, String b)
+static void compile(String path)
 {
-    return strcmp(a, b) == 0;
+    Parser p = parser_init(path);
+    parser_debug_tokens(&p);
+    parser_free(&p);
 }
 
 int main(int argc, char** argv)
