@@ -255,31 +255,45 @@ static void parse_token(Parser* p)
     }
 }
 
-static void compile(String path)
+static Parser parser_init(String path)
 {
-    Parser p;
-
+    Parser p = {};
     p.text = file_mmap(path, &p.text_size);
     if (!p.text) {
         printf("unable to mmap '%s': %s\n", path, strerror(errno));
-        return;
+        return p;
     }
     p.line_no     = 1;
     p.token       = TOKEN_EOF;
     p.token_start = 0;
     p.token_end   = 0;
+    parse_token(&p);
+    return p;
+}
 
+static void parser_free(Parser* p)
+{
+    munmap(p->text, p->text_size);
+}
+
+static void parser_debug_tokens(Parser* p)
+{
     loop {
-        parse_token(&p);
-        if (p.token == TOKEN_EOF) {
+        parse_token(p);
+        if (p->token == TOKEN_EOF) {
             break;
         }
-        printf("%.*s ", int(p.token_end - p.token_start),
-               &p.text[p.token_start]);
+        printf("%.*s ", int(p->token_end - p->token_start),
+               &p->text[p->token_start]);
     }
     printf("\n");
+}
 
-    munmap(p.text, p.text_size);
+static void compile(String path)
+{
+    Parser p = parser_init(path);
+    parser_debug_tokens(&p);
+    parser_free(&p);
 }
 
 static void usage()
