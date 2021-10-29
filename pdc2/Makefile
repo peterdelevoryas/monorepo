@@ -2,7 +2,7 @@ TARGET := pdc
 
 all: $(TARGET)
 
-CFLAGS := -std=c11 -O0 -g -ffast-math -Wall -Werror -fsanitize=address
+CFLAGS := -std=gnu11 -O0 -g -ffast-math -Wall -Werror -fsanitize=address
 
 $(TARGET): main.c
 	time $(CC) $(CFLAGS) $< -o $@
