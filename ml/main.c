@@ -9,15 +9,56 @@
 #include <stdint.h>
 #include <assert.h>
 #include <math.h>
+#include <fcntl.h>
+#include <errno.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <sys/mman.h>
 
+#define TERMINAL_RED "\033[0;31m"
+#define TERMINAL_RESET "\033[0m"
 #define len(a) (sizeof(a) / sizeof(a[0]))
+#define panic() panic_(__func__, __LINE__)
+#define let __auto_type
+#define cast(x, T) ((T)x)
+#define size_t(x) ((size_t)x)
+#define float(x) ((float)x)
+
+_Noreturn static void panic_(const char* func_name, int line_no) {
+  printf("%s:%d: %spanic", func_name, line_no, TERMINAL_RED);
+  if (errno) {
+    printf(": %s", strerror(errno));
+  }
+  printf("%s\n", TERMINAL_RESET);
+  abort();
+}
+
+static void* file_mmap_read(const char* path, size_t* size) {
+  let fd = open(path, O_RDONLY | O_CLOEXEC);
+  if (fd == -1)
+    panic();
+
+  let st = (struct stat){};
+  if (fstat(fd, &st) != 0)
+    goto panic;
+
+  let addr = mmap(NULL, st.st_size, PROT_READ, MAP_SHARED, fd, 0);
+  if (addr == MAP_FAILED)
+    goto panic;
+
+  *size = st.st_size;
+  return addr;
+
+panic:
+  close(fd);
+  panic();
+}
 
 // This generates some input data from the following function: f(x) = x
 // It just adds some random noise to each point to make it harder to
 // train a model. But if you train a model, if should produce a line
 // roughly equivalent to "y = x".
-static
-void generate_data(int m, float x[m][2], float y[m]) {
+static void generate_data(int m, float x[m][2], float y[m]) {
   uint8_t* e = malloc(sizeof(uint8_t) * m);
   FILE* f = fopen("/dev/urandom", "r");
   assert(f);
@@ -81,7 +122,7 @@ void batch_gradient_descent(int n, float w[n], int m,
   // printf("%s: stopped at %d iterations\n", __func__, k);
 }
 
-static void linear_regression_test(void) {
+static void test_linear_regression(void) {
   float x[32][2];
   float y[32];
   float w[2];
@@ -152,9 +193,7 @@ static void tga_uncompressed_grayscale(const void* pixels, uint16_t height,
   fclose(f);
 }
 
-int main(int argc, char** argv) {
-  linear_regression_test();
-
+static void test_gradient_descent(void) {
   uint32_t header[4];
   static uint8_t labels[60000];
   static uint8_t images[60000][28][28];
@@ -202,16 +241,23 @@ int main(int argc, char** argv) {
     tga[i][j][k][l] = images[i * 300 + k][j][l];
   }
   tga_uncompressed_grayscale(tga, 200 * 28, 300 * 28, "images.tga");
+}
 
-  //    0  ... 28 ... 56 ... 128
-  // 0  +-----++-----+
-  // 1  |     ||     |
-  // 2  +-----++-----+
-  // 3
-  // 4
+int main(int argc, char** argv) {
+  test_linear_regression();
+  test_gradient_descent();
 
-  // for (i = 0; i < 10; i++)
-  //   printf("%d ", labels[i]);
-  // printf("\n");
-  // tga_uncompressed_grayscale(images, height * 10, width, "images.tga");
+  let labels_path = "train-labels-idx1-ubyte";
+  let labels_size = size_t(0);
+  let labels_file = file_mmap_read(labels_path, &labels_size);
+  let labels_header = cast(labels_file, const uint32_t*);
+  let labels_data = cast(&labels_file[8], const uint8_t*);
+  assert(__builtin_bswap32(labels_header[0]) == 0x00000801);
+  assert(__builtin_bswap32(labels_header[1]) == 60000);
+  for (let i = 0; i < 10; i++) {
+    printf("%d ", labels_data[i]);
+  }
+  printf("\n");
+
+  munmap(labels_file, labels_size);
 }

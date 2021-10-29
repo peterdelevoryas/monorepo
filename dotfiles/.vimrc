@@ -26,9 +26,14 @@ set textwidth=80
 autocmd FileType cpp setlocal sw=2 ts=2 sts=2 expandtab
 autocmd Filetype c setlocal sw=2 ts=2 sts=2 expandtab
 
+augroup ft_c
+  autocmd!
+  autocmd Syntax c syn keyword Statement let
+augroup end
+
 augroup ft_rust
   autocmd!
-  "autocmd Syntax rust syn keyword Statement function
+  autocmd Syntax rust syn keyword Statement function
   "autocmd Syntax rust hi Statement ctermfg=2
   "autocmd Syntax rust hi PreProc ctermfg=12
 augroup end
