@@ -1,13 +1,19 @@
-target := swr
+TARGET := swr
 
-all: $(target)
+all: $(TARGET)
 
-CFLAGS := -std=gnu11 -g -O0 -ffast-math -Wall -Werror -fsanitize=address -DDEBUG
+HEADERS := $(wildcard *.h)
+SOURCES := $(wildcard *.c)
+OBJECTS := $(patsubst %.c,%.o,$(SOURCES))
+CFLAGS := -std=gnu11 -march=native -O3 -ffast-math -Wall -Werror -fsanitize=address
 
-$(target): main.c
-	time $(CC) $(CFLAGS) -o $@ $<
+%.o: %.c $(HEADERS)
+	time $(CC) -c $(CFLAGS) -o $@ $<
+
+$(TARGET): $(OBJECTS)
+	time $(CC) $(CFLAGS) -o $@ $^
 
 .PHONY: test
 
-test: $(target)
-	./$(target)
+test: $(TARGET)
+	./$(TARGET)

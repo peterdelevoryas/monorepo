@@ -7,8 +7,8 @@ window:
     y: 10
 
 font:
-  offset:
-    y: 8
+  #offset:
+  #y: 8
   normal:
     style: Regular
     family: Roboto Mono
@@ -20,3 +20,16 @@ font:
 
 cursor:
   style: Block
+
+colors:
+  primary:
+    background: '#111415'
+    foreground: '#bfc7cc'
+    foreground: '#8599b3'
+    foreground: '#a3aeb5'
+  normal:
+    black:      '#111415'
+    white:      '#bfc7cc'
+    white:      '#a3aeb5'
+  bright:
+    black:      '#55626a'

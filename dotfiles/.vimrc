@@ -23,12 +23,10 @@ set noswapfile
 set background=dark
 set sts=4 ts=4 sw=4 expandtab
 set textwidth=80
-autocmd FileType cpp setlocal sw=2 ts=2 sts=2 expandtab
-autocmd Filetype c setlocal sw=4 ts=4 sts=4 expandtab
 
 augroup ft_c
   autocmd!
-  autocmd Syntax c syn keyword Statement let
+  autocmd Syntax c syn keyword Statement let loop
 augroup end
 
 augroup ft_rust
@@ -38,11 +36,17 @@ augroup ft_rust
   "autocmd Syntax rust hi PreProc ctermfg=12
 augroup end
 
-hi StatusLine ctermfg=0 ctermbg=7
+hi Comment      ctermfg=8
+hi StatusLine   ctermfg=0 ctermbg=7
 hi StatusLineNC ctermfg=0 ctermbg=7
-hi VertSplit ctermfg=0 ctermbg=7
-hi NonText ctermfg=0
-hi MatchParen ctermfg=2 ctermbg=0
+hi VertSplit    ctermfg=0 ctermbg=7
+hi NonText      ctermfg=0
+hi MatchParen   ctermfg=2 ctermbg=0
+hi Statement    ctermfg=7
+hi PreProc      ctermfg=7
+hi Constant     ctermfg=7
+hi Type         ctermfg=7
+hi Special      ctermfg=7
 
 hi rustModPath      ctermfg=7
 hi rustModPathSep   ctermfg=7
