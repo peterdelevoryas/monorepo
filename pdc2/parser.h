@@ -36,7 +36,7 @@ enum Token {
 };
 
 struct Parser {
-    u8* text;
+    u8 *text;
     u64 text_size;
     u64 line_no;
     u64 token_start;
@@ -44,6 +44,6 @@ struct Parser {
     Token token;
 };
 
-Parser parser_init(String path);
-void parser_free(Parser* p);
-void parser_debug_tokens(Parser* p);
+void parser_init(Parser *p, const char *path);
+void parser_free(Parser *p);
+void parser_debug_tokens(Parser *p);

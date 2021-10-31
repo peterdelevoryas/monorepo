@@ -5,7 +5,7 @@ all: $(TARGET)
 HEADERS := $(wildcard *.h)
 SOURCES := $(wildcard *.c)
 OBJECTS := $(patsubst %.c,%.o,$(SOURCES))
-CFLAGS := -std=gnu11 -O0 -g -ffast-math -Wall -Werror -fsanitize=address
+CFLAGS := -std=gnu17 -O0 -g -ffast-math -Wall -Werror -fsanitize=address
 
 %.o: %.c $(HEADERS)
 	time $(CC) -c $(CFLAGS) -o $@ $<

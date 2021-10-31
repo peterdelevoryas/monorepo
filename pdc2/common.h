@@ -5,12 +5,14 @@
 #define loop for (;;)
 #define int(x) ((int)(x))
 
-typedef int32_t     i32;
-typedef int64_t     i64;
-typedef uint8_t     u8;
-typedef uint16_t    u16;
-typedef uint32_t    u32;
-typedef uint64_t    u64;
-typedef const char* String;
+typedef int8_t i8;
+typedef int16_t i16;
+typedef int32_t i32;
+typedef int64_t i64;
 
-bool string_equals(String a, String b);
+typedef uint8_t u8;
+typedef uint16_t u16;
+typedef uint32_t u32;
+typedef uint64_t u64;
+
+bool strings_equal(const char *a, const char *b);
