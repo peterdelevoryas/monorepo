@@ -22,6 +22,7 @@ set notermguicolors
 set noswapfile
 set background=dark
 set sts=4 ts=4 sw=4 expandtab
+set sts=2 ts=2 sw=2 expandtab
 set textwidth=80
 
 augroup ft_c
