@@ -13,7 +13,10 @@ CFLAGS := -std=gnu17 -O0 -g -ffast-math -Wall -Werror -fsanitize=address
 $(TARGET): $(OBJECTS)
 	time $(CC) $(CFLAGS) -o $@ $^
 
-.PHONY: test
+.PHONY: test clean
 
 test: $(TARGET)
-	./$(TARGET) test.pd
+	$(realpath $(TARGET)) test.pd
+
+clean:
+	rm -f $(OBJECTS) $(TARGET)
