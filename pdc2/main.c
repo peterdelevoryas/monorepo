@@ -4,12 +4,11 @@
 #include <sys/mman.h>
 #include "parser.h"
 
-static void print_usage() {
-    printf("usage: pdc [-h] file...\n");
-}
+#define USAGE_STRING "Usage: pdc [-h] file...\n"
 
 static void compile_file(string path) {
     Parser p;
+    Function f;
     u8* addr;
     u64 size;
 
@@ -23,6 +22,7 @@ static void compile_file(string path) {
     print_tokens(&p);
 
     p = parser_init(path, addr, size);
+    f = parse_function(&p);
     munmap(addr, size);
 }
 
@@ -31,13 +31,14 @@ int main(int argc, string argv[argc]) {
     string arg;
 
     if (argc < 2) {
-        print_usage();
+        printf(USAGE_STRING);
         return 0;
     }
+
     for (i = 1; i < argc; i++) {
         arg = argv[i];
         if (strcmp(arg, "-h") == 0) {
-            print_usage();
+            printf(USAGE_STRING);
             return 0;
         }
         compile_file(arg);

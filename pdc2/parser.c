@@ -231,3 +231,9 @@ void print_tokens(Parser* p) {
     }
     printf("\n");
 }
+
+Function parse_function(Parser* p) {
+    Function f = {};
+
+    return f;
+}
