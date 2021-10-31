@@ -21,7 +21,6 @@ static void compile_file(string path) {
     print_tokens(&p);
 
     p = parser_init(path, addr, size);
-
     munmap(addr, size);
 }
 

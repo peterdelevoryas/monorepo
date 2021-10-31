@@ -1,3 +1,5 @@
 *.dSYM
 *.o
 pdc
+*.ll
+*.s
