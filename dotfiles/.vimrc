@@ -46,6 +46,7 @@ hi Type         ctermfg=7
 hi PreProc      ctermfg=7
 hi Constant     ctermfg=7
 hi Statement    ctermfg=7
+hi Special      ctermfg=7
 
 hi rustModPath      ctermfg=7
 hi rustModPathSep   ctermfg=7

@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <errno.h>
 #include <sys/mman.h>
 #include "parser.h"
 
@@ -14,6 +15,7 @@ static void compile_file(string path) {
 
     addr = mmap_file(path, &size);
     if (!addr) {
+        printf("unable to mmap '%s': %s\n", path, strerror(errno));
         return;
     }
 

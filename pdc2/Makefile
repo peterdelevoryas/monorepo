@@ -5,10 +5,11 @@ all: $(TARGET)
 HEADERS	:= $(wildcard *.h)
 SOURCES	:= $(wildcard *.c)
 OBJECTS	:= $(patsubst %.c,%.o,$(SOURCES))
-CFLAGS	:= -std=gnu17 -O0 -g -ffast-math -Wall -Werror -fsanitize=address
+CFLAGS	:= -std=gnu17 -O2 -ffast-math -Wall -Werror
+ASAN	:= -fsanitize=address
 
 %.o: %.c $(HEADERS)
-	time $(CC) -c $(CFLAGS) -o $@ $<
+	time $(CC) -c $(CFLAGS) $(ASAN) -o $@ $<
 
 %.ll: %.c $(HEADERS)
 	time $(CC) $(CFLAGS) -S -emit-llvm -o $@ $<
@@ -17,7 +18,7 @@ CFLAGS	:= -std=gnu17 -O0 -g -ffast-math -Wall -Werror -fsanitize=address
 	time $(CC) $(CFLAGS) -S -o $@ $<
 
 $(TARGET): $(OBJECTS)
-	time $(CC) $(CFLAGS) -o $@ $^
+	time $(CC) $(CFLAGS) $(ASAN) -o $@ $^
 
 .PHONY: test clean
 

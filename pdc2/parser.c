@@ -13,10 +13,10 @@
 
 u8* mmap_file(string path, u64* size) {
     struct stat st;
-    int fd = 0;
-    int r = 0;
+    int fd;
+    int r;
     u8* addr = NULL;
-    u64 size_ = 0;
+    u64 size_;
 
     fd = open(path, O_RDONLY | O_CLOEXEC);
     if (fd == -1) {
