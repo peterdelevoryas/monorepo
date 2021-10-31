@@ -7,11 +7,14 @@ static void usage() {
 }
 
 static void compile(const char *path) {
-    Parser p;
 
-    parser_init(&p, path);
-    parser_debug_tokens(&p);
-    parser_free(&p);
+    let p = setup_parser(path);
+    debug_tokens(&p);
+    reset_parser(&p);
+
+    let f = expect_function(&p);
+
+    munmap(p.text, p.text_size);
 }
 
 int main(int argc, char **argv) {

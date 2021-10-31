@@ -44,6 +44,10 @@ struct Parser {
     Token token;
 };
 
-void parser_init(Parser *p, const char *path);
+Parser parser_init(const char *path);
 void parser_free(Parser *p);
-void parser_debug_tokens(Parser *p);
+void debug_tokens(Parser *p);
+
+typedef struct Function Function;
+
+void expect_function(Parser *p);

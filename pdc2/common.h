@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#define let __auto_type
 #define loop for (;;)
 #define int(x) ((int)(x))
 

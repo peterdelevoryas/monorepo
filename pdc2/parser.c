@@ -13,19 +13,16 @@
 
 static u8 *file_mmap(const char *path, u64 *size)
 {
-    struct stat st;
-    int fd, err;
-    u8 *addr;
-
-    fd = open(path, O_RDONLY | O_CLOEXEC);
+    let fd = open(path, O_RDONLY | O_CLOEXEC);
     if (fd == -1) {
         return NULL;
     }
-    err = stat(path, &st);
+    let st = (struct stat){};
+    let err = stat(path, &st);
     if (err != 0) {
         goto error;
     }
-    addr = mmap(NULL, st.st_size, PROT_READ, MAP_SHARED, fd, 0);
+    let addr = mmap(NULL, st.st_size, PROT_READ, MAP_SHARED, fd, 0);
     if (addr == MAP_FAILED) {
         goto error;
     }
@@ -202,25 +199,23 @@ static void parse_token(Parser* p)
     }
 }
 
-void parser_init(Parser *p, const char *path) {
-    p->text        = file_mmap(path, &p->text_size);
-    p->line_no     = 1;
-    p->token       = TOKEN_EOF;
-    p->token_start = 0;
-    p->token_end   = 0;
-    if (!p->text) {
+Parser parser_init(const char *path) {
+    Parser p;
+
+    p.text        = file_mmap(path, &p.text_size);
+    p.line_no     = 1;
+    p.token       = TOKEN_EOF;
+    p.token_start = 0;
+    p.token_end   = 0;
+    if (!p.text) {
         printf("unable to mmap '%s': %s\n", path, strerror(errno));
-        return;
+        return p;
     }
-    parse_token(p);
+    parse_token(&p);
+    return p;
 }
 
-void parser_free(Parser *p)
-{
-    munmap(p->text, p->text_size);
-}
-
-void parser_debug_tokens(Parser *p)
+void debug_tokens(Parser *p)
 {
     loop {
         parse_token(p);
