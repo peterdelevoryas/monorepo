@@ -19,4 +19,4 @@ test: $(TARGET)
 	$(realpath $(TARGET)) test.pd
 
 clean:
-	rm -f $(OBJECTS) $(TARGET)
+	rm -f *.o $(TARGET)

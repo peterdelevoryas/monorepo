@@ -11,12 +11,12 @@ font:
   #y: 8
   normal:
     style: Regular
-    family: Menlo
-    family: Roboto Mono
     family: Consolas
+    family: Roboto Mono
+    family: Menlo
   bold:
     style: Regular
-  size: 16
+  size: 12
 
 cursor:
   style: Block

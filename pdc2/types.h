@@ -1,10 +1,5 @@
 #pragma once
 #include <stdint.h>
-#include <stdbool.h>
-
-#define let __auto_type
-#define loop for (;;)
-#define int(x) ((int)(x))
 
 typedef int8_t i8;
 typedef int16_t i16;
@@ -16,4 +11,4 @@ typedef uint16_t u16;
 typedef uint32_t u32;
 typedef uint64_t u64;
 
-bool strings_equal(const char *a, const char *b);
+typedef const char* string;

@@ -1,36 +1,44 @@
 #include <stdio.h>
-#include "common.h"
+#include <string.h>
+#include <sys/mman.h>
 #include "parser.h"
 
-static void usage() {
+static void print_usage() {
     printf("usage: pdc [-h] file...\n");
 }
 
-static void compile(const char *path) {
+static void compile_file(string path) {
+    Parser p;
+    u8* addr;
+    u64 size;
 
-    let p = setup_parser(path);
-    debug_tokens(&p);
-    reset_parser(&p);
+    addr = mmap_file(path, &size);
+    if (!addr) {
+        return;
+    }
 
-    let f = expect_function(&p);
+    p = parser_init(path, addr, size);
+    print_tokens(&p);
 
-    munmap(p.text, p.text_size);
+    p = parser_init(path, addr, size);
+
+    munmap(addr, size);
 }
 
-int main(int argc, char **argv) {
-    const char *s;
+int main(int argc, string argv[argc]) {
     int i;
+    string arg;
 
     if (argc < 2) {
-        usage();
+        print_usage();
         return 0;
     }
     for (i = 1; i < argc; i++) {
-        s = argv[i];
-        if (strings_equal(s, "-h")) {
-            usage();
+        arg = argv[i];
+        if (strcmp(arg, "-h") == 0) {
+            print_usage();
             return 0;
         }
-        compile(s);
+        compile_file(arg);
     }
 }

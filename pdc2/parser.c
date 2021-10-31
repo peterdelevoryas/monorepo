@@ -11,32 +11,39 @@
 #include <assert.h>
 #include "parser.h"
 
-static u8 *file_mmap(const char *path, u64 *size)
-{
-    let fd = open(path, O_RDONLY | O_CLOEXEC);
+u8* mmap_file(string path, u64* size) {
+    struct stat st;
+    int fd = 0;
+    int r = 0;
+    u8* addr = NULL;
+    u64 size_ = 0;
+
+    fd = open(path, O_RDONLY | O_CLOEXEC);
     if (fd == -1) {
-        return NULL;
+        goto done;
     }
-    let st = (struct stat){};
-    let err = stat(path, &st);
-    if (err != 0) {
-        goto error;
+
+    r = fstat(fd, &st);
+    if (r != 0) {
+        goto done;
     }
-    let addr = mmap(NULL, st.st_size, PROT_READ, MAP_SHARED, fd, 0);
+    size_ = st.st_size;
+    *size = size_;
+
+    addr = mmap(NULL, size_, PROT_READ, MAP_SHARED, fd, 0);
     if (addr == MAP_FAILED) {
-        goto error;
+        goto done;
     }
-    close(fd);
-    *size = st.st_size;
+
+done:
+    if (fd != -1) {
+        close(fd);
+    }
     return addr;
-error:
-    close(fd);
-    return NULL;
 }
 
-static void parse_ident(Parser *p)
-{
-    loop {
+static void parse_ident(Parser* p) {
+    for (;;) {
         p->token_end += 1;
         if (p->token_end >= p->text_size) {
             break;
@@ -52,9 +59,8 @@ static void parse_ident(Parser *p)
     }
 }
 
-static void parse_int(Parser *p)
-{
-    loop {
+static void parse_int(Parser* p) {
+    for (;;) {
         p->token_end += 1;
         if (p->token_end >= p->text_size) {
             break;
@@ -67,12 +73,11 @@ static void parse_int(Parser *p)
     }
 }
 
-static void parse_string(Parser *p)
-{
+static void parse_string(Parser* p) {
     bool escaped = false;
 
     assert(p->text[p->token_end] == '"');
-    loop {
+    for (;;) {
         p->token_end += 1;
         if (p->token_end >= p->text_size) {
             printf("unmatched '\"'\n");
@@ -93,8 +98,7 @@ static void parse_string(Parser *p)
     p->token_end += 1;
 }
 
-static Token byte_to_token(u8 b)
-{
+static Token byte_to_token(u8 b) {
     switch (b) {
         case '(':       return TOKEN_LPAREN;
         case ')':       return TOKEN_RPAREN;
@@ -121,9 +125,8 @@ static Token byte_to_token(u8 b)
     }
 }
 
-static void parse_token(Parser* p)
-{
-    loop {
+static void parse_token(Parser* p) {
+    for (;;) {
         p->token_start = p->token_end;
         if (p->token_start >= p->text_size) {
             p->token = TOKEN_EOF;
@@ -199,30 +202,28 @@ static void parse_token(Parser* p)
     }
 }
 
-Parser parser_init(const char *path) {
+Parser parser_init(string path, u8* text, u64 text_size) {
     Parser p;
 
-    p.text        = file_mmap(path, &p.text_size);
-    p.line_no     = 1;
-    p.token       = TOKEN_EOF;
-    p.token_start = 0;
-    p.token_end   = 0;
-    if (!p.text) {
-        printf("unable to mmap '%s': %s\n", path, strerror(errno));
-        return p;
-    }
+    p.text          = text;
+    p.text_size     = text_size;
+    p.line_no       = 1;
+    p.token         = TOKEN_EOF;
+    p.token_start   = 0;
+    p.token_end     = 0;
+
     parse_token(&p);
+
     return p;
 }
 
-void debug_tokens(Parser *p)
-{
-    loop {
+void print_tokens(Parser* p) {
+    for (;;) {
         parse_token(p);
         if (p->token == TOKEN_EOF) {
             break;
         }
-        printf("%.*s ", int(p->token_end - p->token_start),
+        printf("%.*s ", (int)(p->token_end - p->token_start),
                &p->text[p->token_start]);
     }
     printf("\n");

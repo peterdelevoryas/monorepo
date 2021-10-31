@@ -1,5 +1,6 @@
 #pragma once
-#include "common.h"
+#include <stdint.h>
+#include "types.h"
 
 typedef enum Token Token;
 typedef struct Parser Parser;
@@ -36,18 +37,15 @@ enum Token {
 };
 
 struct Parser {
-    u8 *text;
-    u64 text_size;
-    u64 line_no;
-    u64 token_start;
-    u64 token_end;
-    Token token;
+    u8*     text;
+    u64     text_size;
+    u64     line_no;
+    u64     token_start;
+    u64     token_end;
+    Token   token;
 };
 
-Parser parser_init(const char *path);
-void parser_free(Parser *p);
-void debug_tokens(Parser *p);
+u8*     mmap_file(string path, u64* size);
+Parser  parser_init(string path, u8* text, u64 text_size);
 
-typedef struct Function Function;
-
-void expect_function(Parser *p);
+void    print_tokens(Parser* p);
