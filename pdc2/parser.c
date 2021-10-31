@@ -75,6 +75,7 @@ static void parse_int(Parser* p) {
 
 static void parse_string(Parser* p) {
     bool escaped = false;
+    u8 b;
 
     assert(p->text[p->token_end] == '"');
     for (;;) {
@@ -84,7 +85,7 @@ static void parse_string(Parser* p) {
             p->token = TOKEN_ERROR;
             break;
         }
-        u8 b = p->text[p->token_end];
+        b = p->text[p->token_end];
         if (b == '\\' && !escaped) {
             escaped = true;
             continue;
@@ -126,13 +127,15 @@ static Token byte_to_token(u8 b) {
 }
 
 static void parse_token(Parser* p) {
+    u8 b;
+
     for (;;) {
         p->token_start = p->token_end;
         if (p->token_start >= p->text_size) {
             p->token = TOKEN_EOF;
             return;
         }
-        u8 b = p->text[p->token_end];
+        b = p->text[p->token_end];
         p->token = byte_to_token(b);
         switch (p->token) {
             case TOKEN_FN:
