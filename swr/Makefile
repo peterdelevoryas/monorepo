@@ -3,18 +3,18 @@ TARGET := swr
 all: $(TARGET)
 
 HEADERS	:= $(wildcard *.h)
-SOURCES	:= $(wildcard *.c)
-OBJECTS	:= $(patsubst %.c,%.o,$(SOURCES))
-CFLAGS	:= -std=gnu17 -O2 -ffast-math -Wall -Werror
+SOURCES	:= $(wildcard *.cpp)
+OBJECTS	:= $(patsubst %.cpp,%.o,$(SOURCES))
+CFLAGS	:= -std=c++20 -O2 -fno-exceptions -ffast-math -Wall -Werror
 ASAN	:= -fsanitize=address
 
-%.o: %.c $(HEADERS)
+%.o: %.cpp $(HEADERS)
 	$(CC) $(CFLAGS) $(ASAN) -c -o $@ $<
 
-%.ll: %.c $(HEADERS)
+%.ll: %.cpp $(HEADERS)
 	$(CC) $(CFLAGS) -S -emit-llvm -o $@ $<
 
-%.s: %.c $(HEADERS)
+%.s: %.cpp $(HEADERS)
 	$(CC) $(CFLAGS) -S -o $@ $<
 
 $(TARGET): $(OBJECTS)
