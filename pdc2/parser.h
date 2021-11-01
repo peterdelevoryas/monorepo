@@ -38,7 +38,7 @@ enum Token {
 };
 
 struct Parser {
-    u8*     text;
+    string  text;
     u64     text_size;
     u64     line_no;
     u64     token_start;
@@ -46,8 +46,8 @@ struct Parser {
     Token   token;
 };
 
-u8*         mmap_file(string path, u64* size);
-Parser      parser_init(string path, u8* text, u64 text_size);
+void*       mmap_file(string path, u64* size);
+Parser      parser_init(string path, string text, u64 text_size);
 
 void        print_tokens(Parser* p);
 

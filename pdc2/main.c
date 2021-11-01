@@ -9,7 +9,7 @@
 static void compile_file(string path) {
     Parser p;
     Function f;
-    u8* addr;
+    void* addr;
     u64 size;
 
     addr = mmap_file(path, &size);

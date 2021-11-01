@@ -11,11 +11,11 @@
 #include <assert.h>
 #include "parser.h"
 
-u8* mmap_file(string path, u64* size) {
+void* mmap_file(string path, u64* size) {
     struct stat st;
     int fd;
     int r;
-    u8* addr = NULL;
+    void* addr = NULL;
     u64 size_;
 
     fd = open(path, O_RDONLY | O_CLOEXEC);
@@ -205,7 +205,7 @@ static void parse_token(Parser* p) {
     }
 }
 
-Parser parser_init(string path, u8* text, u64 text_size) {
+Parser parser_init(string path, string text, u64 text_size) {
     Parser p;
 
     p.text          = text;
@@ -232,8 +232,95 @@ void print_tokens(Parser* p) {
     printf("\n");
 }
 
+static string token_to_string(Token t) {
+    switch (t) {
+        case TOKEN_FN:              return "fn";
+        case TOKEN_LET:             return "let";
+        case TOKEN_RETURN:          return "return";
+        case TOKEN_I8:              return "i8";
+        case TOKEN_I16:             return "i16";
+        case TOKEN_I32:             return "i32";
+        case TOKEN_I64:             return "i64";
+        case TOKEN_LPAREN:          return "(";
+        case TOKEN_RPAREN:          return ")";
+        case TOKEN_LBRACE:          return "{";
+        case TOKEN_RBRACE:          return "}";
+        case TOKEN_EQ:              return "=";
+        case TOKEN_STAR:            return "*";
+        case TOKEN_PLUS:            return "+";
+        case TOKEN_MINUS:           return "-";
+        case TOKEN_DOT:             return ".";
+        case TOKEN_COMMA:           return ",";
+        case TOKEN_COLON:           return ":";
+        case TOKEN_SEMICOLON:       return ";";
+        case TOKEN_ELLIPSIS:        return "...";
+        case TOKEN_ARROW:           return "->";
+        case TOKEN_IDENT:           return "identifier";
+        case TOKEN_INT:             return "integer";
+        case TOKEN_STRING:          return "string";
+        case TOKEN_SPACE:           return " ";
+        default:                    return "<token_to_string unimplemented>";
+    }
+}
+
+static void tok(Parser* p, Token t) {
+    string expected;
+    string got;
+
+    if (p->token != t) {
+        expected = token_to_string(t);
+        got = token_to_string(p->token);
+        printf("Expected '%s', got '%s'\n", expected, got);
+        p->token = TOKEN_EOF;
+        return;
+    }
+    parse_token(p);
+}
+
+static string intern_string(string s, u64 n) {
+    static char pool[4096];
+    static u64 pool_size = 0;
+
+    string t;
+    u64 m;
+    u64 i;
+
+    for (i = 0; i < pool_size; i += m) {
+        t = &pool[i];
+        m = strlen(t);
+        if (n != m) {
+            continue;
+        }
+        if (strncmp(s, t, n) != 0) {
+            continue;
+        }
+        return t;
+    }
+
+    assert(pool_size + n + 1 <= sizeof(pool));
+    t = &pool[pool_size];
+    memcpy(&pool[pool_size], s, n);
+    pool[pool_size + n] = '\0';
+    pool_size += n + 1;
+
+    return t;
+}
+
+static string tok_string(Parser* p, Token t) {
+    string s;
+    u64 n;
+
+    s = &p->text[p->token_start];
+    n = p->token_end - p->token_start;
+
+    return intern_string(s, n);
+}
+
 Function parse_function(Parser* p) {
     Function f = {};
+
+    tok(p, TOKEN_FN);
+    f.name = tok_string(p, TOKEN_IDENT);
 
     return f;
 }
