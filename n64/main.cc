@@ -1,13 +1,18 @@
 #include <cstdio>
+#include <cassert>
 #include <unistd.h>
+
 #include <vulkan/vulkan.h>
-#include "metal.hh"
+#include <GLFW/glfw3.h>
 
 #define let const auto
 #define var auto
+#define loop for (;;)
 
 int main(int argc, char** argv) {
-    osx_create_window();
+    glfwInit();
+    let window = glfwCreateWindow(1000, 1000, "hello world", nullptr, nullptr);
+    assert(window);
 
     VkInstance instance;
     let instance_info = VkInstanceCreateInfo{};
@@ -15,11 +20,13 @@ int main(int argc, char** argv) {
     (void)r;
     vkDestroyInstance(instance, nullptr);
 
-    for (int i = 0;; i++) {
-        printf("%d ", i);
-        fflush(stdout);
-
-        osx_drain_events();
-        usleep(33'000);
+    loop {
+        glfwPollEvents();
+        if (glfwWindowShouldClose(window)) {
+            break;
+        }
     }
+
+    glfwDestroyWindow(window);
+    glfwTerminate();
 }

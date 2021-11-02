@@ -5,11 +5,11 @@ all: $(TARGET)
 HEADERS := $(wildcard *.hh)
 SOURCES := $(wildcard *.cc)
 OBJECTS := $(patsubst %.cc,%.o,$(SOURCES))
-OBJECTS += metal.o
+#OBJECTS += metal.o
 FLAGS   := -std=c++20 -O2 -fno-exceptions -ffast-math -Wall -Werror
 ASAN    := -fsanitize=address
-LIBS    := -lvulkan
-LIBS    += -framework Cocoa -framework IOKit -framework CoreFoundation
+LIBS    := -lvulkan -lglfw
+#LIBS    += -framework Cocoa -framework IOKit -framework CoreFoundation
 
 metal.o: metal.mm
 	$(CXX) $(FLAGS) -c -o $@ $<
