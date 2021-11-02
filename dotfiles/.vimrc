@@ -35,6 +35,11 @@ augroup ft_cpp
   autocmd Syntax cpp syn keyword Statement let var loop
 augroup end
 
+augroup ft_objcpp
+  autocmd!
+  autocmd Syntax objcpp syn keyword Statement let var loop
+augroup end
+
 augroup ft_rust
   autocmd!
   autocmd Syntax rust syn keyword Statement function

@@ -1,59 +1,47 @@
 #include <cstdio>
+#include <unistd.h>
 #include <Cocoa/Cocoa.h>
-#include <QuartzCore/CAMetalLayer.h>
+#include <MetalKit/MetalKit.h>
 
 #define let const auto
 #define var auto
+#define loop for (;;)
 
-@interface Window : NSWindow {}
-@end
-
-@implementation Window
-- (BOOL)canBecomeKeyWindow {
-    return YES;
-}
-- (BOOL)canBecomeMainWindow {
-    return YES;
-}
-@end
-
-@interface View : NSView {}
-@end
-
-@implementation View
-- (BOOL)canBecomeKeyView {
-    return YES;
-}
-- (BOOL)acceptsFirstResponder {
-    return YES;
-}
-- (BOOL)wantsUpdateLayer {
-    return YES;
-}
-@end
-
-void metal_create_window() {
+void osx_create_window() {
     [NSApplication sharedApplication];
     [NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];
 
-    let rect = NSMakeRect(0, 0, 1000, 1000);
-    let style_mask = NSWindowStyleMaskTitled | NSWindowStyleMaskClosable;
-    let window = [[Window alloc] initWithContentRect: rect
-                                 styleMask: style_mask
-                                 backing: NSBackingStoreBuffered
-                                 defer: NO ];
-    [window center];
+    let bar = [[NSMenu alloc] init];
+    [NSApp setMainMenu:bar];
 
-    let view = [[NSView alloc] initWithFrame: rect];
-    [view setHidden:NO];
-    [view setNeedsDisplay:YES];
-    [view setWantsLayer:YES];
-    [window setContentView:view];
-    [window makeFirstResponder:view];
-    [window orderFront:nil];
-    [NSApp activateIgnoringOtherApps:YES];
+    let item = [bar addItemWithTitle:@"" action:nullptr keyEquivalent:@""];
+    let menu = [[NSMenu alloc] init];
+    [item setSubmenu:menu];
+    [menu addItemWithTitle:@"quit"
+          action:@selector(terminate:)
+          keyEquivalent:@"q"];
+
+    let style = NSWindowStyleMaskTitled | NSWindowStyleMaskClosable;
+    let rectangle = NSMakeRect(0, 0, 1000, 1000);
+    let window = [[NSWindow alloc] initWithContentRect:rectangle
+                                   styleMask:style
+                                   backing:NSBackingStoreBuffered
+                                   defer:NO];
+    [window setTitle:@"n64"];
+    [window setRestorable:NO];
     [window makeKeyAndOrderFront:nil];
-    [NSApp run];
+    [NSApp activateIgnoringOtherApps:YES];
+}
 
-    printf("done\n");
+void osx_drain_events() {
+    loop {
+        let event = [NSApp nextEventMatchingMask:NSEventMaskAny
+                           untilDate:[NSDate distantPast]
+                           inMode:NSDefaultRunLoopMode
+                           dequeue:YES];
+        if (!event) {
+            break;
+        }
+        [NSApp sendEvent:event];
+    }
 }
