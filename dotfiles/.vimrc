@@ -30,6 +30,11 @@ augroup ft_c
   autocmd Syntax c syn keyword Statement let loop
 augroup end
 
+augroup ft_cpp
+  autocmd!
+  autocmd Syntax cpp syn keyword Statement let var loop
+augroup end
+
 augroup ft_rust
   autocmd!
   autocmd Syntax rust syn keyword Statement function
@@ -43,12 +48,12 @@ hi StatusLineNC ctermfg=0 ctermbg=7
 hi VertSplit    ctermfg=0 ctermbg=7
 hi NonText      ctermfg=0
 hi MatchParen   ctermfg=2 ctermbg=0
-hi Type         ctermfg=7
-hi PreProc      ctermfg=7
-hi Constant     ctermfg=7
-hi Statement    ctermfg=7
-hi Special      ctermfg=7
-hi cErrInParen  ctermfg=7
+"hi Type         ctermfg=7
+"hi PreProc      ctermfg=7
+"hi Constant     ctermfg=7
+"hi Statement    ctermfg=7
+"hi Special      ctermfg=7
+"hi cErrInParen  ctermfg=7
 hi LineNr       ctermfg=8
 
 hi rustModPath      ctermfg=7
