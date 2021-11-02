@@ -2,24 +2,29 @@ TARGET := n64
 
 all: $(TARGET)
 
-HEADERS := $(wildcard *.h)
-SOURCES := $(wildcard *.cpp)
-OBJECTS := $(patsubst %.cpp,%.o,$(SOURCES))
-CFLAGS  := -std=c++20 -O2 -fno-exceptions -ffast-math -Wall -Werror
+HEADERS := $(wildcard *.hh)
+SOURCES := $(wildcard *.cc)
+OBJECTS := $(patsubst %.cc,%.o,$(SOURCES))
+OBJECTS += metal.o
+FLAGS   := -std=c++20 -O2 -fno-exceptions -ffast-math -Wall -Werror
 ASAN    := -fsanitize=address
 LIBS    := -lvulkan
+LIBS    += -framework Cocoa -framework IOKit -framework CoreFoundation
 
-%.o: %.cpp $(HEADERS)
-	$(CC) $(CFLAGS) $(ASAN) -c -o $@ $<
+metal.o: metal.mm
+	$(CXX) $(FLAGS) -c -o $@ $<
 
-%.ll: %.cpp $(HEADERS)
-	$(CC) $(CFLAGS) -S -emit-llvm -o $@ $<
+%.o: %.cc $(HEADERS)
+	$(CXX) $(FLAGS) $(ASAN) -c -o $@ $<
 
-%.s: %.cpp $(HEADERS)
-	$(CC) $(CFLAGS) -S -o $@ $<
+%.ll: %.cc $(HEADERS)
+	$(CXX) $(FLAGS) -S -emit-llvm -o $@ $<
+
+%.s: %.cc $(HEADERS)
+	$(CXX) $(FLAGS) -S -o $@ $<
 
 $(TARGET): $(OBJECTS)
-	$(CC) $(CFLAGS) $(ASAN) $(LIBS) -o $@ $^
+	$(CXX) $(FLAGS) $(ASAN) $(LIBS) -o $@ $^
 
 .PHONY: test clean
 
