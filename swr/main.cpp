@@ -38,6 +38,10 @@ struct Vector {
   u32 len;
   u32 capacity;
 
+  void free() const {
+    ::free(data);
+  }
+
   static Vector<T> with_capacity(u32 capacity) {
     let data = malloc(sizeof(T) * capacity);
     let data_ = static_cast<T*>(data);
@@ -69,6 +73,7 @@ struct Obj {
   Vector<u16x3> faces;
 
   static Obj read_file(const char* path);
+  void free() const;
 };
 
 Obj Obj::read_file(const char* path) {
@@ -111,7 +116,12 @@ Obj Obj::read_file(const char* path) {
   return {vertices, faces};
 }
 
+void Obj::free() const {
+  vertices.free();
+  faces.free();
+}
+
 int main(int argc, char** argv) {
   let obj = Obj::read_file("head.obj");
-  (void)obj;
+  obj.free();
 }
