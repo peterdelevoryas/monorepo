@@ -32,7 +32,7 @@ augroup end
 
 augroup ft_cpp
   autocmd!
-  autocmd Syntax cpp syn keyword Statement let var loop
+  autocmd Syntax cpp syn keyword Statement let var loop function fn
 augroup end
 
 augroup ft_objcpp
