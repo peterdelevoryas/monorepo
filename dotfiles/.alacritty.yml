@@ -11,8 +11,8 @@ font:
   #y: 8
   normal:
     style: Regular
-    family: Roboto Mono
     family: Consolas
+    family: Roboto Mono
     family: Menlo
   bold:
     style: Regular

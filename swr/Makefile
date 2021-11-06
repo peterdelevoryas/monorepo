@@ -2,23 +2,10 @@ TARGET := swr
 
 all: $(TARGET)
 
-HEADERS	:= $(wildcard *.h)
-SOURCES	:= $(wildcard *.cpp)
-OBJECTS	:= $(patsubst %.cpp,%.o,$(SOURCES))
-CFLAGS	:= -std=c++20 -O2 -fno-exceptions -ffast-math -Wall -Werror
-ASAN	:= -fsanitize=address
+CXXFLAGS := -std=c++20 -O2 -fno-exceptions -ffast-math -Wall -Werror -fsanitize=address
 
-%.o: %.cpp $(HEADERS)
-	$(CC) $(CFLAGS) $(ASAN) -c -o $@ $<
-
-%.ll: %.cpp $(HEADERS)
-	$(CC) $(CFLAGS) -S -emit-llvm -o $@ $<
-
-%.s: %.cpp $(HEADERS)
-	$(CC) $(CFLAGS) -S -o $@ $<
-
-$(TARGET): $(OBJECTS)
-	$(CC) $(CFLAGS) $(ASAN) -o $@ $^
+$(TARGET): main.cpp
+	$(CXX) $(CXXFLAGS) -o $@ $<
 
 .PHONY: test clean
 
