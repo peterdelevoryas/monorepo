@@ -25,7 +25,6 @@ set background=dark
 set sts=4 ts=4 sw=4 expandtab
 "set sts=2 ts=2 sw=2 expandtab
 set textwidth=80
-colorscheme solarized
 
 augroup ft_c
   autocmd!
@@ -49,19 +48,12 @@ augroup ft_rust
   "autocmd Syntax rust hi PreProc ctermfg=12
 augroup end
 
-"hi Comment      ctermfg=8
-"hi StatusLine   ctermfg=0 ctermbg=7
-"hi StatusLineNC ctermfg=0 ctermbg=7
-"hi VertSplit    ctermfg=0 ctermbg=7
-"hi NonText      ctermfg=0
-"hi MatchParen   ctermfg=2 ctermbg=0
-
-hi Comment      ctermfg=12
-hi StatusLine   ctermfg=8 ctermbg=12
-hi StatusLineNC ctermfg=8 ctermbg=12
-hi VertSplit    ctermfg=8 ctermbg=12
-hi NonText      ctermfg=8
-hi MatchParen   ctermfg=2 ctermbg=8
+hi Comment      ctermfg=8
+hi StatusLine   ctermfg=0 ctermbg=7
+hi StatusLineNC ctermfg=0 ctermbg=7
+hi VertSplit    ctermfg=0 ctermbg=7
+hi NonText      ctermfg=0
+hi MatchParen   ctermfg=2 ctermbg=0
 
 " Minimal highlighting rules.
 "hi Type         ctermfg=7
