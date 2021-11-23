@@ -21,9 +21,9 @@ set t_Co=16
 set notermguicolors
 set noswapfile
 set background=dark
-set sts=4 ts=4 sw=4 expandtab
-"set sts=2 ts=2 sw=2 expandtab
 "set sts=8 ts=8 sw=8 noexpandtab
+"set sts=4 ts=4 sw=4 expandtab
+set sts=2 ts=2 sw=2 expandtab
 set textwidth=80
 
 augroup ft_c
@@ -55,6 +55,16 @@ hi VertSplit    ctermfg=0 ctermbg=7
 hi NonText      ctermfg=0
 hi MatchParen   ctermfg=2 ctermbg=0
 
+" Minimal highlighting rules.
+hi Type         ctermfg=7
+hi PreProc      ctermfg=7
+hi Constant     ctermfg=7
+hi Statement    ctermfg=7
+hi Special      ctermfg=7
+hi cErrInParen  ctermfg=7
+hi Identifier   ctermfg=7
+hi LineNr       ctermfg=8
+
 " Github Dark highlighting rules.
 hi Include          ctermfg=1
 hi cStorageClass    ctermfg=1
@@ -71,15 +81,6 @@ hi cConstant        ctermfg=4
 hi cString          ctermfg=6
 hi cOperator        ctermfg=7
 hi cTodo            ctermfg=8
-
-"hi Type         ctermfg=7
-"hi PreProc      ctermfg=7
-"hi Constant     ctermfg=7
-"hi Statement    ctermfg=7
-"hi Special      ctermfg=7
-"hi cErrInParen  ctermfg=7
-"hi LineNr       ctermfg=8
-"hi Identifier   ctermfg=7
 
 hi rustModPath      ctermfg=7
 hi rustModPathSep   ctermfg=7
