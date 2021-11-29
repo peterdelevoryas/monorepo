@@ -54,6 +54,7 @@ hi StatusLineNC ctermfg=0 ctermbg=7
 hi VertSplit    ctermfg=0 ctermbg=7
 hi NonText      ctermfg=0
 hi MatchParen   ctermfg=2 ctermbg=0
+hi Visual       ctermfg=0
 
 " Minimal highlighting rules.
 "hi Type         ctermfg=7
