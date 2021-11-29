@@ -16,7 +16,7 @@ font:
     family: Menlo
   bold:
     style: Regular
-  size: 14
+  size: 18
 
 cursor:
   style: Block
