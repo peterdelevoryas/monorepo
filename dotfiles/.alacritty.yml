@@ -1,22 +1,20 @@
 window:
   dimensions:
     columns: 100
-    lines: 30
+    lines: 50
   padding:
     x: 10
     y: 10
 
 font:
-  #offset:
-  #y: 8
   normal:
     style: Regular
-    family: Consolas
     family: Roboto Mono
+    family: Consolas
     family: Menlo
   bold:
     style: Regular
-  size: 18
+  size: 16
 
 cursor:
   style: Block
@@ -29,3 +27,6 @@ colors:
   normal:
     black: '#171717'
     white: '#999DA2'
+      #  green: '#80C159'
+      #bright:
+      #  green: '#80C159'

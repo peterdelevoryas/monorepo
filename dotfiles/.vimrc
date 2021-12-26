@@ -58,14 +58,14 @@ hi Visual       ctermfg=0
 hi Todo         ctermfg=8 ctermbg=0
 
 " Minimal highlighting rules.
-"hi Type         ctermfg=7
-"hi PreProc      ctermfg=7
-"hi Constant     ctermfg=7
-"hi Statement    ctermfg=7
-"hi Special      ctermfg=7
-"hi cErrInParen  ctermfg=7
-"hi Identifier   ctermfg=7
-"hi LineNr       ctermfg=8
+hi Type         ctermfg=7
+hi PreProc      ctermfg=7
+hi Constant     ctermfg=7
+hi Statement    ctermfg=7
+hi Special      ctermfg=7
+hi cErrInParen  ctermfg=7
+hi Identifier   ctermfg=7
+hi LineNr       ctermfg=8
 
 " Github Dark highlighting rules.
 "hi Include          ctermfg=1
