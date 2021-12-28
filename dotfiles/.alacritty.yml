@@ -10,8 +10,8 @@ font:
   normal:
     style: Regular
     family: Roboto Mono
-    family: Consolas
     family: Menlo
+    family: Consolas
   bold:
     style: Regular
   size: 16
