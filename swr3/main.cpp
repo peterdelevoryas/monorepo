@@ -105,6 +105,7 @@ struct Vec {
   u32 cap;
 
   static Vec<T> with_capacity(u32 cap, Arena& arena) {
+    assert(cap != 0);
     T* ptr = arena.alloc_array<T>(cap);
     return {ptr, 0, cap};
   }
@@ -138,13 +139,13 @@ int main(int argc, char** argv) {
   if (fstat(fd, &st) != 0) {
     panic("Unable to fstat head.obj");
   }
-  void* addr = mmap(nullptr, st.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
+  void *addr = mmap(nullptr, st.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
   if (addr == MAP_FAILED) {
     panic("Unable to mmap head.obj");
   }
-  const char* text = static_cast<const char*>(addr);
-  Vec<f32x3> vertices = {nullptr, 0, 0};
-  Vec<u16x3> faces = {nullptr, 0, 0};
+  const char *text = static_cast<const char*>(addr);
+  auto vertices = Vec<f32x3>::with_capacity(1500, g_arena);
+  auto faces = Vec<u16x3>::with_capacity(2500, g_arena);
   for (size_t i = 0; i < st.st_size; i++) {
     switch (text[i]) {
       case 'v':
