@@ -32,6 +32,16 @@ using u64 = uint64_t;
 using f32 = float;
 using f64 = double;
 
+template<typename T>
+T min(const T &x, const T &y) {
+  return x > y ? y : x;
+}
+
+template<typename T>
+T max(const T &x, const T &y) {
+  return x < y ? y : x;
+}
+
 struct MemoryMappedFile {
   void *addr;
   size_t size;
@@ -293,6 +303,34 @@ struct Image {
     return {x, y, v.z};
   }
 
+  void draw_triangle(f32x3 a, f32x3 b, f32x3 c, Pixel color) {
+    f32 min_x = min(min(a.x, b.x), c.x);
+    f32 max_x = max(max(a.x, b.x), c.x);
+    f32 min_y = min(min(a.y, b.y), c.y);
+    f32 max_y = max(max(a.y, b.y), c.y);
+    for (i32 x = min_x; x <= max_x; x++) {
+      if (x >= width) {
+        continue;
+      }
+      for (i32 y = min_y; y <= max_y; y++) {
+        if (y >= height) {
+          continue;
+        }
+        f32x3 p = {c.x - a.x, b.x - a.x, a.x - f32(x)};
+        f32x3 q = {c.y - a.y, b.y - a.y, a.y - f32(y)};
+        f32x3 s = cross(p, q);
+        if (fabsf(s.z) < 1.0f) {
+          continue;
+        }
+        f32x3 t = {1.0f - (s.x + s.y) / s.z, s.y / s.z, s.x / s.z};
+        if (t.x < 0.0f || t.y < 0.0f || t.z < 0.0f) {
+          continue;
+        }
+        at(x, y) = color;
+      }
+    }
+  }
+
   void save_as_tga_file(const char *path) {
     constexpr u8 bytes_per_pixel = sizeof(pixels[0]);
     constexpr u8 bits_per_pixel = bytes_per_pixel * 8;
@@ -314,44 +352,6 @@ struct Image {
     fclose(f);
   }
 };
-
-template<typename T>
-T min(const T &x, const T &y) {
-  return x > y ? y : x;
-}
-
-template<typename T>
-T max(const T &x, const T &y) {
-  return x < y ? y : x;
-}
-
-static void draw_triangle(Image &image, f32x3 a, f32x3 b, f32x3 c, Pixel color) {
-  f32 min_x = min(min(a.x, b.x), c.x);
-  f32 max_x = max(max(a.x, b.x), c.x);
-  f32 min_y = min(min(a.y, b.y), c.y);
-  f32 max_y = max(max(a.y, b.y), c.y);
-  for (i32 x = min_x; x <= max_x; x++) {
-    if (x >= image.width) {
-      continue;
-    }
-    for (i32 y = min_y; y <= max_y; y++) {
-      if (y >= image.height) {
-        continue;
-      }
-      f32x3 p = {c.x - a.x, b.x - a.x, a.x - f32(x)};
-      f32x3 q = {c.y - a.y, b.y - a.y, a.y - f32(y)};
-      f32x3 s = cross(p, q);
-      if (fabsf(s.z) < 1.0f) {
-        continue;
-      }
-      f32x3 t = {1.0f - (s.x + s.y) / s.z, s.y / s.z, s.x / s.z};
-      if (t.x < 0.0f || t.y < 0.0f || t.z < 0.0f) {
-        continue;
-      }
-      image.at(x, y) = color;
-    }
-  }
-}
 
 int main(int argc, char **argv) {
   static Pixel pixels[1000][1000];
@@ -376,7 +376,7 @@ int main(int argc, char **argv) {
     b = image.screen_coord(b);
     c = image.screen_coord(c);
     u8 p = I * 255.0f;
-    draw_triangle(image, a, b, c, {p, p, p});
+    image.draw_triangle(a, b, c, {p, p, p});
   }
 
   image.save_as_tga_file("out.tga");
