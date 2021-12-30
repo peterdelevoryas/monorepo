@@ -4,6 +4,7 @@
 #include <cstring>
 #include <cerrno>
 #include <cassert>
+#include <limits>
 #include <math.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -277,12 +278,19 @@ struct Pixel {
 
 struct Image {
   Pixel *pixels;
+  f32 *zbuffer;
   u32 width;
   u32 height;
 
   template<u32 N, u32 M>
-  static Image from_array(Pixel (&array)[N][M]) {
-    return {&array[0][0], M, N};
+  static Image from_arrays(Pixel (&pixels)[N][M], f32 (&zbuffer)[N][M]) {
+    memset(pixels, 0, sizeof(pixels));
+    for (u32 i = 0; i < N; i++) {
+      for (u32 j = 0; j < M; j++) {
+        zbuffer[i][j] = std::numeric_limits<f32>::max();
+      }
+    }
+    return {&pixels[0][0], &zbuffer[0][0], M, N};
   }
 
   Pixel &at(u32 x, u32 y) {
@@ -304,6 +312,9 @@ struct Image {
   }
 
   void draw_triangle(f32x3 a, f32x3 b, f32x3 c, Pixel color) {
+    a = screen_coord(a);
+    b = screen_coord(b);
+    c = screen_coord(c);
     f32 min_x = min(min(a.x, b.x), c.x);
     f32 max_x = max(max(a.x, b.x), c.x);
     f32 min_y = min(min(a.y, b.y), c.y);
@@ -332,11 +343,12 @@ struct Image {
   }
 
   void save_as_tga_file(const char *path) {
+    assert(width <= UINT16_MAX);
+    assert(height <= UINT16_MAX);
+
     constexpr u8 bytes_per_pixel = sizeof(pixels[0]);
     constexpr u8 bits_per_pixel = bytes_per_pixel * 8;
 
-    assert(width <= UINT16_MAX);
-    assert(height <= UINT16_MAX);
     u8 header[18] = {};
     header[2] = 2;
     header[12] = width & 0xFF;
@@ -355,11 +367,12 @@ struct Image {
 
 int main(int argc, char **argv) {
   static Pixel pixels[1000][1000];
-  Image image = Image::from_array(pixels);
+  static f32 zbuffer[1000][1000];
+  Image image = Image::from_arrays(pixels, zbuffer);
 
-  f32x3 spotlight = {0.0f, 0.0f, -1.0f};
   Obj obj = load_obj("head.obj");
 
+  constexpr f32x3 spotlight = {0.0f, 0.0f, -1.0f};
   for (int i = 0; i < obj.faces.count; i++) {
     u16x3 f = obj.faces[i];
     f32x3 a = obj.vertices[f.x];
@@ -372,9 +385,6 @@ int main(int argc, char **argv) {
     if (I <= 0.0f) {
       continue;
     }
-    a = image.screen_coord(a);
-    b = image.screen_coord(b);
-    c = image.screen_coord(c);
     u8 p = I * 255.0f;
     image.draw_triangle(a, b, c, {p, p, p});
   }
