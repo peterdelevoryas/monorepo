@@ -7,6 +7,8 @@ window:
     y: 10
 
 font:
+  offset:
+    y: 10
   normal:
     style: Regular
     family: Roboto Mono

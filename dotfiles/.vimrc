@@ -22,10 +22,10 @@ set notermguicolors
 set noswapfile
 set background=dark
 set textwidth=80
-set sts=4 ts=4 sw=4 expandtab
-"set sts=2 ts=2 sw=2 expandtab
+"set sts=4 ts=4 sw=4 expandtab
+set sts=2 ts=2 sw=2 expandtab
 "set sts=8 ts=8 sw=8 noexpandtab
-autocmd FileType cpp setlocal sw=2 ts=2 sts=2
+"autocmd FileType cpp setlocal sw=2 ts=2 sts=2
 
 augroup ft_c
   autocmd!
@@ -48,6 +48,9 @@ augroup ft_rust
   "autocmd Syntax rust hi Statement ctermfg=2
   "autocmd Syntax rust hi PreProc ctermfg=12
 augroup end
+
+autocmd Syntax cpp syn keyword cppFixedWidthType uint8_t uint16_t uint32_t uint64_t
+autocmd Syntax cpp syn keyword cppFixedWidthType int8_t int16_t int32_t int64_t
 
 hi Comment      ctermfg=8
 hi StatusLine   ctermfg=0 ctermbg=7
@@ -101,3 +104,5 @@ hi cCharacter       ctermfg=6
 hi cFloat           ctermfg=4
 hi cFormat          ctermfg=4
 hi cSpecialCharacter ctermfg=6
+hi cppFixedWidthType ctermfg=4
+hi cppConstant      ctermfg=4
