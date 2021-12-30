@@ -1,9 +1,9 @@
 all: a.out
 
-CFLAGS := -std=gnu17 -O0 -ffast-math -Wall -Werror
+CXXFLAGS := -std=c++20 -g -O0 -ffast-math -fno-exceptions -Wall -Werror
 
-a.out: main.c
-	$(CC) $(CFLAGS) -o $@ $<
+a.out: main.cpp
+	$(CXX) $(CXXFLAGS) -o $@ $<
 
 .PHONY: test
 
