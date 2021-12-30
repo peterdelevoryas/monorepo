@@ -4,6 +4,7 @@
 #include <cstring>
 #include <cerrno>
 #include <cassert>
+#include <math.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/stat.h>
@@ -59,15 +60,53 @@ static MemoryMappedFile mmap_read_only(const char *path) {
 
 struct f32x3 {
   f32 x, y, z;
+
+  f32 magnitude() const;
+  f32x3 normalize() const;
 };
 
 struct u16x3 {
   u16 x, y, z;
 };
 
-// static f32 dot(f32x3 a, f32x3 b) {
+static f32x3 cross(f32x3 a, f32x3 b) {
+  f32 s0 = a.y * b.z - a.z * b.y;
+  f32 s1 = a.z * b.x - a.x * b.z;
+  f32 s2 = a.x * b.y - a.y * b.x;
+  return {s0, s1, s2};
+}
+
+static f32 dot(f32x3 a, f32x3 b) {
+  return a.x * b.x + a.y * b.y + a.z * b.z;
+}
+
+// static f32 operator*(f32x3 a, f32x3 b) {
 //   return a.x * b.x + a.y * b.y + a.z * b.z;
 // }
+
+static f32x3 operator*(f32x3 a, f32 s) {
+  return {a.x * s, a.y * s, a.z * s};
+}
+
+static f32x3 operator/(f32x3 a, f32 d) {
+  return a * (1.0f / d);
+}
+
+// static f32x3 operator+(f32x3 a, f32x3 b) {
+//   return {a.x + b.x, a.y + b.y, a.z + b.z};
+// }
+
+static f32x3 operator-(f32x3 a, f32x3 b) {
+  return {a.x - b.x, a.y - b.y, a.z - b.z};
+}
+
+f32 f32x3::magnitude() const {
+  return sqrtf(dot(*this, *this));
+}
+
+f32x3 f32x3::normalize() const {
+  return (*this) / magnitude();
+}
 
 static u8 *align_address(u8 *addr, u64 alignment) {
   i64 x = i64(addr);
@@ -161,10 +200,12 @@ struct Vector {
   }
 
   T &operator[](u32 i) {
+    assert(i < count);
     return data[i];
   }
 
   const T &operator[](u32 i) const {
+    assert(i < count);
     return data[i];
   }
 };
@@ -201,6 +242,9 @@ static Obj load_obj(const char *path) {
       case 'f':
         if (sscanf(&s[i], "f %hu/%hu/%hu %hu/%hu/%hu %hu/%hu/%hu",
                    &a, &d, &d, &b, &d, &d, &c, &d, &d) == 9) {
+          a--;
+          b--;
+          c--;
           faces.push({a, b, c}, g_tmp_arena);
         }
         break;
@@ -217,16 +261,123 @@ static Obj load_obj(const char *path) {
   return {vertices, faces};
 }
 
+struct Pixel {
+  u8 b, g, r;
+};
+
+struct Image {
+  Pixel *pixels;
+  u32 width;
+  u32 height;
+
+  template<u32 N, u32 M>
+  static Image from_array(Pixel (&array)[N][M]) {
+    return {&array[0][0], M, N};
+  }
+
+  Pixel &at(u32 x, u32 y) {
+    assert(x < width);
+    assert(y < height);
+    return pixels[y * width + x];
+  }
+
+  const Pixel &at(u32 x, u32 y) const {
+    assert(x < width);
+    assert(y < height);
+    return pixels[y * width + x];
+  }
+
+  f32x3 screen_coord(const f32x3 &v) {
+    f32 x = (v.x + 1.0f) * f32(width / 2);
+    f32 y = (v.y + 1.0f) * f32(height / 2);
+    return {x, y, v.z};
+  }
+
+  void save_as_tga_file(const char *path) {
+    constexpr u8 bytes_per_pixel = sizeof(pixels[0]);
+    constexpr u8 bits_per_pixel = bytes_per_pixel * 8;
+
+    assert(width <= UINT16_MAX);
+    assert(height <= UINT16_MAX);
+    u8 header[18] = {};
+    header[2] = 2;
+    header[12] = width & 0xFF;
+    header[13] = (width & 0xFF00) >> 8;
+    header[14] = height & 0xFF;
+    header[15] = (height & 0xFF00) >> 8;
+    header[16] = bits_per_pixel;
+
+    FILE *f = fopen(path, "w");
+    assert(f);
+    fwrite(header, sizeof(header), 1, f);
+    fwrite(pixels, bytes_per_pixel, width * height, f);
+    fclose(f);
+  }
+};
+
+template<typename T>
+T min(const T &x, const T &y) {
+  return x > y ? y : x;
+}
+
+template<typename T>
+T max(const T &x, const T &y) {
+  return x < y ? y : x;
+}
+
+static void draw_triangle(Image &image, f32x3 a, f32x3 b, f32x3 c, Pixel color) {
+  f32 min_x = min(min(a.x, b.x), c.x);
+  f32 max_x = max(max(a.x, b.x), c.x);
+  f32 min_y = min(min(a.y, b.y), c.y);
+  f32 max_y = max(max(a.y, b.y), c.y);
+  for (i32 x = min_x; x <= max_x; x++) {
+    if (x >= image.width) {
+      continue;
+    }
+    for (i32 y = min_y; y <= max_y; y++) {
+      if (y >= image.height) {
+        continue;
+      }
+      f32x3 p = {c.x - a.x, b.x - a.x, a.x - f32(x)};
+      f32x3 q = {c.y - a.y, b.y - a.y, a.y - f32(y)};
+      f32x3 s = cross(p, q);
+      if (fabsf(s.z) < 1.0f) {
+        continue;
+      }
+      f32x3 t = {1.0f - (s.x + s.y) / s.z, s.y / s.z, s.x / s.z};
+      if (t.x < 0.0f || t.y < 0.0f || t.z < 0.0f) {
+        continue;
+      }
+      image.at(x, y) = color;
+    }
+  }
+}
+
 int main(int argc, char **argv) {
+  static Pixel pixels[1000][1000];
+  Image image = Image::from_array(pixels);
+
+  f32x3 spotlight = {0.0f, 0.0f, -1.0f};
   Obj obj = load_obj("head.obj");
 
-  for (int i = 0; i < obj.vertices.count; i++) {
-    f32x3 v = obj.vertices[i];
-    printf("v %f %f %f\n", v.x, v.y, v.z);
+  for (int i = 0; i < obj.faces.count; i++) {
+    u16x3 f = obj.faces[i];
+    f32x3 a = obj.vertices[f.x];
+    f32x3 b = obj.vertices[f.y];
+    f32x3 c = obj.vertices[f.z];
+    f32x3 ab = b - a;
+    f32x3 ac = c - a;
+    f32x3 n = cross(ac, ab).normalize();
+    f32 I = dot(n, spotlight);
+    if (I <= 0.0f) {
+      continue;
+    }
+    a = image.screen_coord(a);
+    b = image.screen_coord(b);
+    c = image.screen_coord(c);
+    u8 p = I * 255.0f;
+    draw_triangle(image, a, b, c, {p, p, p});
   }
 
-  for (int i = 0; i < obj.faces.count; i++) {
-    u16x3 u = obj.faces[i];
-    printf("f %hu %hu %hu\n", u.x, u.y, u.z);
-  }
+  image.save_as_tga_file("out.tga");
 }
