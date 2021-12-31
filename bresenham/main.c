@@ -129,26 +129,27 @@ static struct MemoryMappedFile Memory_MapFile(const char *path)
     return f;
 }
 
-typedef f32 f32x3[3];
-typedef u16 u16x3[3];
+struct f32x3 { f32 x, y, z; };
+struct u16x3 { u16 x, y, z; };
 
 struct Obj {
-    f32x3 *v;
-    u16x3 *f;
-    int vn, vi;
-    int fn, fi;
+    struct f32x3 *v;
+    struct u16x3 *f;
+    int v_n, v_i;
+    int f_n, f_i;
 };
 
 struct Obj Obj_Load(const char *path)
 {
-    struct Obj o;
+    struct Obj obj;
     struct MemoryMappedFile f;
     const char *s;
-    f32 x, y, z;
-    u16 a, b, c, d;
+    struct f32x3 v;
+    struct u16x3 u;
+    u16 d;
     size_t i;
 
-    memset(&o, 0, sizeof(o));
+    memset(&obj, 0, sizeof(obj));
     f = Memory_MapFile(path);
     s = f.addr;
     for (i = 0; i < f.size; i++) {
@@ -156,52 +157,61 @@ struct Obj Obj_Load(const char *path)
         case 'v':
             switch (s[i + 1]) {
             case ' ':
-                if (sscanf(&s[i], "v %f %f %f", &x, &y, &z) == 3) {
-                    Reserve(o.v, o.vn, o.vi + 1, B);
-                    printf("o.v = %p\n", o.v);
-                    o.v[o.vi][0] = x;
-                    o.v[o.vi][1] = y;
-                    o.v[o.vi][2] = z;
-                    o.vi++;
+                if (sscanf(&s[i], "v %f %f %f", &v.x, &v.y, &v.z) == 3) {
+                    Reserve(obj.v, obj.v_n, obj.v_i + 1, B);
+                    obj.v[obj.v_i++] = v;
                 }
                 break;
             }
             break;
         case 'f':
             if (sscanf(&s[i], "f %hu/%hu/%hu %hu/%hu/%hu %hu/%hu/%hu",
-                       &a, &d, &d, &b, &d, &d, &c, &d, &d) == 9) {
-                Reserve(o.f, o.fn, o.fi + 1, B);
-                o.f[o.fi][0] = a;
-                o.f[o.fi][1] = b;
-                o.f[o.fi][2] = c;
-                o.fi++;
+                       &u.x, &d, &d, &u.y, &d, &d, &u.z, &d, &d) == 9) {
+                Reserve(obj.f, obj.f_n, obj.f_i + 1, B);
+                obj.f[obj.f_i++] = u;
             }
             break;
         }
     }
     munmap(f.addr, f.size);
 
-    return o;
+    return obj;
+}
+
+static void Image_SaveAsTgaFile(const u8 *im, u16 w, u16 h, const char *out_path)
+{
+    FILE *f;
+    u8 header[18];
+
+    memset(&header, 0, sizeof(header));
+    header[2] = 2;
+    header[12] = (w & 0x00FF) >> 0;
+    header[13] = (w & 0xFF00) >> 8;
+    header[14] = (h & 0x00FF) >> 0;
+    header[15] = (h & 0xFF00) >> 8;
+    header[16] = 24;
+
+    f = fopen(out_path, "w");
+    assert(f);
+    fwrite(header, sizeof(header), 1, f);
+    fwrite(im, 
+    fclose(f);
 }
 
 int main(int argc, char **argv)
 {
-    uint8_t *im;
-    float *z;
-    int w, h, i;
+    u8 *im;
+    f32 *z;
+    u16 w, h;
+    struct Image im;
     struct Obj obj;
 
     w = 1000;
     h = 1000;
     im = Arena_AllocateAligned(&A, w * h * 3, 16);
-    z = Arena_AllocateAligned(&A, w * h * sizeof(float), 16);
+    z = Arena_AllocateAligned(&A, w * h * sizeof(*z), 16);
 
     obj = Obj_Load("head.obj");
 
-    for (i = 0; i < obj.vi; i++) {
-        printf("v %f %f %f\n", obj.v[i][0], obj.v[i][1], obj.v[i][2]);
-    }
-    for (i = 0; i < obj.fi; i++) {
-        printf("f %hu %hu %hu\n", obj.f[i][0], obj.f[i][1], obj.f[i][2]);
-    }
+    Image_SaveAsTgaFile(im, w, h, "out.tga");
 }
