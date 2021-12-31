@@ -21,7 +21,8 @@ font:
 cursor:
   style: Block
 
-    #colors:
+# The 'Dark dimmed' colorscheme from Github.
+#    #colors:
     #  primary:
     #    foreground: '#999DA2'
     #    background: '#171717'
@@ -33,16 +34,15 @@ cursor:
     #      #bright:
     #      #  green: '#80C159'
     #
-
-# The 'Dark dimmed' colorscheme from Github.
 colors:
   primary:
-    background: '#2d333b'
+    background: '#171717'
     background: '#22272e'
+    foreground: '#999da2'
     foreground: '#adbac7'
     foreground: '#768390'
   normal:
-    black:   '#2d333b'
+    black:   '#171717'
     black:   '#22272e'
     red:     '#f47067'
     green:   '#8ddb8c'
@@ -50,6 +50,7 @@ colors:
     blue:    '#6cb6ff'
     magenta: '#dcbdfb'
     cyan:    '#96d0ff'
+    white:   '#999da2'
     white:   '#adbac7'
     white:   '#768390'
   bright:

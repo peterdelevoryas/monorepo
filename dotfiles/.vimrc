@@ -23,8 +23,8 @@ set notermguicolors
 set noswapfile
 set background=dark
 set textwidth=80
-"set sts=4 ts=4 sw=4 expandtab
-set sts=2 ts=2 sw=2 expandtab
+"set sts=2 ts=2 sw=2 expandtab
+set sts=4 ts=4 sw=4 expandtab
 "set sts=8 ts=8 sw=8 noexpandtab
 "autocmd FileType cpp setlocal sw=2 ts=2 sts=2
 
