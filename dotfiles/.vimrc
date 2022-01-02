@@ -58,7 +58,7 @@ hi StatusLine   ctermfg=0 ctermbg=7
 hi StatusLineNC ctermfg=0 ctermbg=7
 hi VertSplit    ctermfg=0 ctermbg=7
 hi NonText      ctermfg=0
-hi MatchParen   ctermfg=2 ctermbg=0
+hi MatchParen   ctermfg=4 ctermbg=0
 hi Visual       ctermfg=0
 hi Todo         ctermfg=8 ctermbg=0
 
