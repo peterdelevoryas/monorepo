@@ -18,13 +18,6 @@ using i64 = int64_t;
 using f32 = float;
 using f64 = double;
 
-static u8* align_address(u8* address, i64 alignment) {
-  assert(alignment >= 1);
-  i64 x = i64(address);
-  x += -x & (alignment - 1);
-  return reinterpret_cast<u8*>(x);
-}
-
 template<typename T, int N>
 struct SmallVector {
   int len = 0;
@@ -223,9 +216,24 @@ done:
   return obj;
 }
 
-int main(int argc, char** argv) {
-  (void)align_address;
+struct Image {
+  struct Pixel { u8 b, g, r; };
 
-  Obj obj = load_obj("head.obj");
+  Pixel* pixels;
+  int width;
+  int height;
+
+  template<int W, int H>
+  static Image from_array(Pixel (&array)[H][W]) {
+    return {&array[0][0], W, H};
+  }
+};
+
+int main(int argc, char** argv) {
+  auto obj = load_obj("head.obj");
   (void)obj;
+
+  static Image::Pixel image_memory[1000][1000];
+  auto image = Image::from_array(image_memory);
+  (void)image;
 }
