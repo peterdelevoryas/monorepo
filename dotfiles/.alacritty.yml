@@ -22,18 +22,18 @@ cursor:
   style: Block
 
 # The 'Dark dimmed' colorscheme from Github.
-#    #colors:
-    #  primary:
-    #    foreground: '#999DA2'
-    #    background: '#171717'
-    #
-    #  normal:
-    #    black: '#171717'
-    #    white: '#999DA2'
-    #      #  green: '#80C159'
-    #      #bright:
-    #      #  green: '#80C159'
-    #
+#colors:
+# primary:
+#   foreground: '#999DA2'
+#   background: '#171717'
+#
+# normal:
+#   black: '#171717'
+#   white: '#999DA2'
+#     #  green: '#80C159'
+#     #bright:
+#     #  green: '#80C159'
+
 colors:
   primary:
     background: '#171717'
