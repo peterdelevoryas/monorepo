@@ -103,48 +103,74 @@ struct Obj {
 
 struct Parser {
   const char* s;
+  int i;
+
+  char bump() {
+    return s[i++];
+  }
 
   void skip_space() {
-  start:
-    switch (*s) {
-      case ' ':
-      case '\t':
-      case '\r':
-        s++;
-        goto start;
-      default:
-        break;
+    for (;;) {
+      switch (s[i]) {
+        case ' ':
+        case '\t':
+        case '\r':
+          i++;
+          continue;
+        default:
+          break;
+      }
+      break;
+    }
+  }
+
+  void skip_to_space() {
+    for (;;) {
+      switch (s[i]) {
+        case '\0':
+        case ' ':
+        case '\t':
+        case '\r':
+        case '\n':
+          break;
+        default:
+          i++;
+          continue;
+      }
+      break;
     }
   }
 
   void skip_to_next_line() {
-  start:
-    switch (*s) {
-      case '\0':
-        break;
-      case '\n':
-        s++;
-        break;
-      default:
-        s++;
-        goto start;
+    for (;;) {
+      switch (s[i]) {
+        case '\0':
+          break;
+        case '\n':
+          i++;
+          break;
+        default:
+          i++;
+          continue;
+      }
+      break;
     }
   }
 
   f32 parse_f32() {
     char* end;
-    f32 x = strtof(s, &end);
+    f32 x = strtof(&s[i], &end);
     assert(end != s);
-    s = end;
+    i = end - s;
     return x;
   }
 
   u16 parse_u16() {
     char* end;
-    unsigned long x = strtoul(s, &end, 10);
+    unsigned long x = strtoul(&s[i], &end, 10);
     assert(end != s);
     assert(x <= UINT16_MAX);
-    s = end;
+    i = end - s;
     return u16(x);
   }
 };
@@ -154,33 +180,44 @@ static Obj load_obj(const char* path) {
 
   auto [addr, size] = mmap_file(path);
   auto s = static_cast<const char*>(addr);
-  auto p = Parser{s};
+  auto p = Parser{s, 0};
   for (;;) {
-    switch (*p.s) {
+    f32 v[3];
+    u16 u[3];
+    switch (p.bump()) {
+      case '\0':
+        goto done;
       case 'v':
-        p.s++;
-        switch (*p.s) {
+        switch (p.bump()) {
           case 'n':
+            printf("vn ? ? ?\n");
             break;
           case 't':
+            printf("vt ? ? ?\n");
             break;
-          default: {
-            f32 v[3];
+          default:
             for (int i = 0; i < 3; i++) {
               p.skip_space();
               v[i] = p.parse_f32();
             }
             obj.vertices.push({v[0], v[1], v[2]});
+            printf("v %f %f %f\n", v[0], v[1], v[2]);
             break;
-          }
         }
         break;
       case 'f':
-        p.s++;
+        for (int i = 0; i < 3; i++) {
+          p.skip_space();
+          u[i] = p.parse_u16();
+          p.skip_to_space();
+        }
+        obj.faces.push({u[0], u[1], u[2]});
+        printf("f %hu %hu %hu\n", u[0], u[1], u[2]);
         break;
     }
     p.skip_to_next_line();
   }
+done:
   munmap(addr, size);
 
   return obj;
