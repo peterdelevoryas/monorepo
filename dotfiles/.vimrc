@@ -8,6 +8,7 @@ autocmd BufNewFile,BufRead *.pd setfiletype rust
 
 filetype plugin indent on
 syntax on
+set backspace=indent,eol,start
 set smartcase
 set ignorecase
 set smartindent
