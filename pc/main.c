@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
+#include <stdbool.h>
 #include <assert.h>
 #include <time.h>
 #include <fcntl.h>
@@ -178,10 +179,34 @@ static const TypeKind TOKEN_TYPE[] = {
 
 struct Type {
     TypeKind kind;
-    FunctionType *function;
-    Type *pointer_value_type;
-    Symbol symbol;
+    union {
+        FunctionType *function;
+        Type *pointer_value_type;
+        Symbol symbol;
+    };
 };
+
+static void PrintType(const Type *t)
+{
+    switch (t->kind) {
+        case TYPE_I8:
+            printf("i8");
+            break;
+        case TYPE_I32:
+            printf("i32");
+            break;
+        case TYPE_POINTER:
+            printf("*");
+            PrintType(t->pointer_value_type);
+            break;
+        case TYPE_FUNCTION:
+            printf("unimplemented: function type printing\n");
+            abort();
+        case TYPE_SYMBOL:
+            printf("%s", t->symbol.value);
+            break;
+    }
+}
 
 struct Param {
     const char *name;
@@ -214,7 +239,7 @@ struct Expr {
     ExprKind kind;
     const char *int_literal;
     Symbol use_symbol;
-    Type *type;
+    Type type;
 };
 
 enum StmtKind {
@@ -225,6 +250,7 @@ enum StmtKind {
 struct Let {
     const char *name;
     Expr rhs;
+    Type type;
 };
 
 struct Return {
@@ -421,8 +447,8 @@ static Type ParseType(Parser *p)
     switch (p->token) {
         case TOKEN_I8:
         case TOKEN_I32:
-            Bump(p);
             t.kind = TOKEN_TYPE[p->token];
+            Bump(p);
             break;
         case TOKEN_IDENT:
             t.kind = TYPE_SYMBOL;
@@ -739,14 +765,64 @@ static void ResolveSymbols(Globals *g, File *f)
     }
 }
 
+static bool TypesEqual(const Type *a, const Type *b)
+{
+    if (a->kind != b->kind) {
+        PrintType(a);
+        printf(" != ");
+        PrintType(b);
+        printf("\n");
+        return false;
+    }
+    return true;
+}
+
+static Type TypeCheckSymbol(Globals *g, const Symbol *symbol)
+{
+    switch (symbol->kind) {
+        case SYMBOL_UNDEFINED:
+            printf("TypeCheck: symbol undefined: '%s'\n", symbol->value);
+            abort();
+        case SYMBOL_FUNCTION:
+            printf("type checking function symbol unimplemented\n");
+            abort();
+        case SYMBOL_TYPE:
+            printf("type checking type symbol unimplemented\n");
+            abort();
+        case SYMBOL_VARIABLE:
+            return ((Let *)symbol->definition)->type;
+        case SYMBOL_PARAM:
+            return ((Param *)symbol->definition)->type;
+    }
+}
+
 static void TypeCheckExpr(Globals *g, Expr *e, Type *expected)
 {
+    switch (e->kind) {
+        case EXPR_INT_LITERAL:
+            if (expected) {
+                e->type = *expected;
+            } else {
+                e->type.kind = TYPE_I32;
+            }
+            break;
+        case EXPR_USE_SYMBOL:
+            e->type = TypeCheckSymbol(g, &e->use_symbol);
+            break;
+    }
+
+    if (expected && !TypesEqual(&e->type, expected)) {
+        printf("Type mismatch\n");
+        abort();
+    }
 }
 
 static void TypeCheckStmt(Globals *g, Stmt *stmt)
 {
     switch (stmt->kind) {
         case STMT_LET:
+            TypeCheckExpr(g, &stmt->let.rhs, NULL);
+            stmt->let.type = stmt->let.rhs.type;
             break;
         case STMT_RETURN:
             assert(g->current_function);
