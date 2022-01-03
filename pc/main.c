@@ -9,6 +9,8 @@
 #include <sys/stat.h>
 #include <sys/mman.h>
 
+#define ArrayLen(x) (sizeof(x) / sizeof((x)[0]))
+
 #define Reserve(v, n) \
     do { \
         if (v.len + n > v.cap) { \
@@ -21,6 +23,12 @@
 #define Append(v, x) \
     do { \
         Reserve(v, 1); \
+        v.buf[v.len++] = x; \
+    } while (0)
+
+#define FixedAppend(v, x) \
+    do { \
+        assert(v.len < ArrayLen(v.buf)); \
         v.buf[v.len++] = x; \
     } while (0)
 
@@ -73,7 +81,7 @@ enum Token {
     TOKEN_MAX,
 };
 
-const static uint8_t char_to_token[256] = {
+const static uint8_t CHAR_TOKEN[256] = {
     ['('] = TOKEN_LPAREN,
     [')'] = TOKEN_RPAREN,
     ['{'] = TOKEN_LBRACE,
@@ -86,7 +94,7 @@ const static uint8_t char_to_token[256] = {
     ['='] = TOKEN_EQ,
 };
 
-static const char *const token_to_string[TOKEN_MAX] = {
+static const char *const TOKEN_STRING[TOKEN_MAX] = {
     [TOKEN_FUNCTION] = "function",
     [TOKEN_LET] = "let",
     [TOKEN_RETURN] = "return",
@@ -111,6 +119,91 @@ static const char *const token_to_string[TOKEN_MAX] = {
     [TOKEN_NEWLINE] = NULL,
     [TOKEN_ERROR] = NULL,
     [TOKEN_EOF] = NULL,
+};
+
+enum SymbolKind {
+    SYMBOL_UNDEFINED,
+    SYMBOL_FUNCTION,
+    SYMBOL_TYPE,
+    SYMBOL_VARIABLE,
+};
+
+struct Symbol {
+    enum SymbolKind kind;
+    const char *value;
+    void *definition;
+};
+
+enum TypeKind {
+    TYPE_I8,
+    TYPE_I32,
+    TYPE_POINTER,
+    TYPE_FUNCTION,
+};
+
+struct Type {
+    enum TypeKind kind;
+    struct FunctionType *function;
+    struct Type *pointer_value_type;
+};
+
+struct Param {
+    const char *name;
+    struct Type type;
+};
+
+struct FunctionType {
+    struct {
+        struct Param buf[32];
+        int len;
+    } params;
+    struct Type return_type;
+};
+
+struct StmtArray {
+    struct Stmt *buf;
+    int len, cap;
+};
+
+struct Block {
+    struct StmtArray stmts;
+};
+
+enum ExprKind {
+    EXPR_INT_LITERAL,
+    EXPR_USE_SYMBOL,
+};
+
+struct Expr {
+    enum ExprKind kind;
+    const char *int_literal;
+    struct Symbol use_symbol;
+};
+
+enum StmtKind {
+    STMT_LET,
+    STMT_RETURN,
+};
+
+struct Let {
+    const char *name;
+    struct Expr rhs;
+};
+
+struct Return {
+    struct Expr value;
+};
+
+struct Stmt {
+    enum StmtKind kind;
+    struct Let let;
+    struct Return ret;
+};
+
+struct Function {
+    const char *name;
+    struct FunctionType type;
+    struct Block body;
 };
 
 struct Parser {
@@ -142,7 +235,7 @@ static void ParseIdent(struct Parser *p)
     n1 = p->end - p->start;
     s1 = p->file + p->start;
     for (i = 0; i < TOKEN_NR_KEYWORDS; i++) {
-        s2 = token_to_string[i];
+        s2 = TOKEN_STRING[i];
         n2 = strlen(s2);
         if (n1 == n2 && memcmp(s1, s2, n1) == 0) {
             p->token = i;
@@ -234,7 +327,7 @@ static void Bump(struct Parser *p)
             case '*':
             case '+':
             case '=':
-                p->token = char_to_token[(int)c];
+                p->token = CHAR_TOKEN[(int)c];
                 p->end++;
                 break;
             default:
@@ -247,19 +340,171 @@ static void Bump(struct Parser *p)
     }
 }
 
-struct TokenArray {
-    struct {
-        enum Token token;
-        int start, end;
-    } *buf;
-    int cap, len;
-};
+static void Expect(struct Parser *p, enum Token t)
+{
+    if (p->token == t) {
+        Bump(p);
+        return;
+    }
+    printf("Expected %s, got %s: '%.*s'\n",
+           TOKEN_STRING[t], TOKEN_STRING[p->token],
+           p->end - p->start, &p->file[p->start]);
+    abort();
+}
 
-static struct TokenArray ParseFile(const char *path)
+static const char *ExpectString(struct Parser *p, enum Token t)
+{
+    const char *s;
+    int n;
+
+    s = &p->file[p->start];
+    n = p->end - p->start;
+    Expect(p, t);
+
+    return strndup(s, n);
+}
+
+static struct Type ParseType(struct Parser *p)
+{
+    struct Type t;
+
+    memset(&t, 0, sizeof(t));
+    switch (p->token) {
+        case TOKEN_I8:
+            Bump(p);
+            t.kind = TYPE_I8;
+            break;
+        case TOKEN_I32:
+            Bump(p);
+            t.kind = TYPE_I32;
+            break;
+        case TOKEN_STAR:
+            Bump(p);
+            t.kind = TYPE_POINTER;
+            t.pointer_value_type = malloc(sizeof(*t.pointer_value_type));
+            *t.pointer_value_type = ParseType(p);
+            break;
+        default:
+            printf("Expected type, got %s\n", TOKEN_STRING[p->token]);
+            abort();
+    }
+
+    return t;
+}
+
+static struct Param ParseParam(struct Parser *p)
+{
+    struct Param param;
+
+    param.name = ExpectString(p, TOKEN_IDENT);
+    Expect(p, TOKEN_COLON);
+    param.type = ParseType(p);
+    return param;
+}
+
+static struct FunctionType ParseFunctionType(struct Parser *p)
+{
+    struct FunctionType f;
+
+    memset(&f, 0, sizeof(f));
+    Expect(p, TOKEN_LPAREN);
+    while (p->token != TOKEN_RPAREN) {
+        FixedAppend(f.params, ParseParam(p));
+        if (p->token != TOKEN_COMMA) {
+            break;
+        }
+        Bump(p);
+    }
+    Expect(p, TOKEN_RPAREN);
+    Expect(p, TOKEN_ARROW);
+    f.return_type = ParseType(p);
+
+    return f;
+}
+
+static struct Expr ParseExpr(struct Parser *p)
+{
+    struct Expr e;
+
+    memset(&e, 0, sizeof(e));
+    switch (p->token) {
+        case TOKEN_INT:
+            e.kind = EXPR_INT_LITERAL;
+            e.int_literal = ExpectString(p, TOKEN_INT);
+            break;
+        case TOKEN_IDENT:
+            e.kind = EXPR_USE_SYMBOL;
+            e.use_symbol.kind = SYMBOL_UNDEFINED;
+            e.use_symbol.value = ExpectString(p, TOKEN_IDENT);
+            e.use_symbol.definition = NULL;
+            break;
+        default:
+            printf("Expected expression, got '%s'\n", TOKEN_STRING[p->token]);
+            abort();
+    }
+    return e;
+}
+
+static struct Stmt ParseStmt(struct Parser *p)
+{
+    struct Stmt stmt;
+
+    memset(&stmt, 0, sizeof(stmt));
+    switch (p->token) {
+        case TOKEN_LET:
+            Bump(p);
+            stmt.kind = STMT_LET;
+            stmt.let.name = ExpectString(p, TOKEN_IDENT);
+            Expect(p, TOKEN_EQ);
+            stmt.let.rhs = ParseExpr(p);
+            Expect(p, TOKEN_SEMICOLON);
+            break;
+        case TOKEN_RETURN:
+            Bump(p);
+            stmt.kind = STMT_RETURN;
+            stmt.ret.value = ParseExpr(p);
+            Expect(p, TOKEN_SEMICOLON);
+            break;
+        default:
+            printf("Expected statement, got %s\n", TOKEN_STRING[p->token]);
+            abort();
+    }
+
+    return stmt;
+}
+
+static struct Block ParseBlock(struct Parser *p)
+{
+    struct Block b;
+
+    memset(&b, 0, sizeof(b));
+    Expect(p, TOKEN_LBRACE);
+    while (p->token != TOKEN_RBRACE) {
+        Append(b.stmts, ParseStmt(p));
+    }
+    Expect(p, TOKEN_RBRACE);
+
+    return b;
+}
+
+static struct Function ParseFunction(struct Parser *p)
+{
+    struct Function f;
+
+    memset(&f, 0, sizeof(f));
+
+    Expect(p, TOKEN_FUNCTION);
+    f.name = ExpectString(p, TOKEN_IDENT);
+    f.type = ParseFunctionType(p);
+    f.body = ParseBlock(p);
+
+    return f;
+}
+
+static struct Parser CreateParser(const char *path)
 {
     struct MemoryMappedFile f;
     struct Parser p;
-    struct TokenArray t;
 
     f = Mmap(path);
     p.path = path;
@@ -268,18 +513,23 @@ static struct TokenArray ParseFile(const char *path)
     p.token = TOKEN_EOF;
     p.start = p.end = 0;
     p.line_no = 1;
-    t.buf = NULL;
-    t.cap = t.len = 0;
-    for (Bump(&p); p.token != TOKEN_EOF; Bump(&p)) {
-        Reserve(t, 1);
-        t.buf[t.len].token = p.token;
-        t.buf[t.len].start = p.start;
-        t.buf[t.len].end = p.end;
-        t.len++;
-    }
+    Bump(&p);
 
-    munmap(f.addr, f.size);
-    return t;
+    return p;
+}
+
+static void DestroyParser(struct Parser *p)
+{
+    munmap((void *)p->file, p->size);
+}
+
+static void ParseFile(const char *path)
+{
+    struct Parser p;
+
+    p = CreateParser(path);
+    ParseFunction(&p);
+    DestroyParser(&p);
 }
 
 static struct timespec TimespecSubtract(struct timespec a, struct timespec b)
@@ -301,42 +551,15 @@ static void Compile(const char *path)
 {
     struct timespec t0, t1;
     double dt;
-    int i;
-    struct TokenArray tokens;
-    struct MemoryMappedFile f;
-    enum Token t;
-    int start, end;
-    const char *s;
-    int n;
 
-    printf("Compiling '%s'...", path);
+    printf("Compiling '%s'...\n", path);
     clock_gettime(CLOCK_MONOTONIC, &t0);
 
-    tokens = ParseFile(path);
+    ParseFile(path);
 
     clock_gettime(CLOCK_MONOTONIC, &t1);
     dt = TimespecToDouble(TimespecSubtract(t1, t0));
-    printf("done: %f seconds\n", dt);
-
-    f = Mmap(path);
-    for (i = 0; i < tokens.len; i++) {
-        t = tokens.buf[i].token;
-        start = tokens.buf[i].start;
-        end = tokens.buf[i].end;
-        s = &f.addr[start];
-        n = end - start;
-        switch (t) {
-            case TOKEN_IDENT:
-            case TOKEN_INT:
-                printf("'%.*s' ", n, s);
-                break;
-            default:
-                printf("%s ", token_to_string[t]);
-                break;
-        }
-    }
-    printf("\n");
-    munmap(f.addr, f.size);
+    printf("Done: took %f seconds\n", dt);
 }
 
 int main(int argc, char **argv)
