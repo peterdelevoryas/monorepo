@@ -171,7 +171,7 @@ enum TypeKind {
 };
 
 // Maybe just delete this and cast Token to TypeKind?
-static const enum TypeKind TOKEN_TYPE[] = {
+static const TypeKind TOKEN_TYPE[] = {
     [TOKEN_I8] = TYPE_I8,
     [TOKEN_I32] = TYPE_I32,
 };
@@ -232,7 +232,7 @@ struct Return {
 };
 
 struct Stmt {
-    enum StmtKind kind;
+    StmtKind kind;
     Let let;
     Return ret;
 };
@@ -610,7 +610,7 @@ struct Globals {
     Function *current_function;
 };
 
-static Symbol CreateSymbol(enum SymbolKind kind, const char *value, void *definition)
+static Symbol CreateSymbol(SymbolKind kind, const char *value, void *definition)
 {
     Symbol s;
 
