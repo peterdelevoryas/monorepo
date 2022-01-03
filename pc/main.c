@@ -180,6 +180,7 @@ struct Expr {
     enum ExprKind kind;
     const char *int_literal;
     struct Symbol use_symbol;
+    struct Type *type;
 };
 
 enum StmtKind {
@@ -568,6 +569,7 @@ struct SymbolTable {
 struct Globals {
     struct TypeArray types;
     struct SymbolTable symbol_table;
+    struct Function *current_function;
 };
 
 static const char *const PRIMITIVE_TYPE_NAMES[] = {
@@ -612,31 +614,6 @@ static struct Symbol CreateSymbol(enum SymbolKind kind, const char *value, void 
     return s;
 }
 
-static void ResolveSymbolsInType(struct Globals *g, struct Type *t)
-{
-}
-
-static int CreateScope(struct Globals *g)
-{
-    return g->symbol_table.len;
-}
-
-static void DestroyScope(struct Globals *g, int scope)
-{
-    assert(0 <= scope && scope < g->symbol_table.len);
-    g->symbol_table.len = scope;
-}
-
-static void ResolveSymbolsInFunctionType(struct Globals *g, struct FunctionType *f)
-{
-    struct Param *p;
-
-    ForEach(p, f->params) {
-        ResolveSymbolsInType(g, &p->type);
-        Append(g->symbol_table, CreateSymbol(SYMBOL_PARAM, p->name, p));
-    }
-}
-
 static void ResolveSymbol(struct Globals *g, struct Symbol *symbol)
 {
     struct Symbol *def;
@@ -653,6 +630,46 @@ static void ResolveSymbol(struct Globals *g, struct Symbol *symbol)
     }
     printf("Undefined symbol: '%s'\n", symbol->value);
     abort();
+}
+
+static int CreateScope(struct Globals *g)
+{
+    return g->symbol_table.len;
+}
+
+static void DestroyScope(struct Globals *g, int scope)
+{
+    assert(0 <= scope && scope < g->symbol_table.len);
+    g->symbol_table.len = scope;
+}
+
+static void ResolveSymbolsInType(struct Globals *g, struct Type *t)
+{
+    switch (t->kind) {
+        case TYPE_I8:
+        case TYPE_I32:
+            // Nothing to do here.
+            break;
+        case TYPE_POINTER:
+            ResolveSymbolsInType(g, t->pointer_value_type);
+            break;
+        case TYPE_FUNCTION:
+            printf("unimplemented\n");
+            abort();
+        case TYPE_SYMBOL:
+            ResolveSymbol(g, &t->symbol);
+            break;
+    }
+}
+
+static void ResolveSymbolsInFunctionType(struct Globals *g, struct FunctionType *f)
+{
+    struct Param *p;
+
+    ForEach(p, f->params) {
+        ResolveSymbolsInType(g, &p->type);
+        Append(g->symbol_table, CreateSymbol(SYMBOL_PARAM, p->name, p));
+    }
 }
 
 static void ResolveSymbolsInExpr(struct Globals *g, struct Expr *e)
@@ -716,6 +733,48 @@ static void ResolveSymbols(struct Globals *g, struct File *f)
     }
 }
 
+static void TypeCheckExpr(struct Globals *g, struct Expr *e, struct Type *expected)
+{
+}
+
+static void TypeCheckStmt(struct Globals *g, struct Stmt *stmt)
+{
+    switch (stmt->kind) {
+        case STMT_LET:
+            break;
+        case STMT_RETURN:
+            assert(g->current_function);
+            TypeCheckExpr(g, &stmt->ret.value, &g->current_function->type.return_type);
+            break;
+    }
+}
+
+static void TypeCheckBlock(struct Globals *g, struct Block *b)
+{
+    struct Stmt *stmt;
+
+    ForEach(stmt, b->stmts) {
+        TypeCheckStmt(g, stmt);
+    }
+}
+
+static void TypeCheckFunction(struct Globals *g, struct Function *f)
+{
+    g->current_function = f;
+
+    TypeCheckBlock(g, &f->body);
+}
+
+static void TypeCheck(struct Globals *g, struct File *f)
+{
+    struct Function *fn;
+
+    ForEach(fn, f->functions) {
+        TypeCheckFunction(g, fn);
+    }
+    g->current_function = NULL;
+}
+
 static struct timespec TimespecSubtract(struct timespec a, struct timespec b)
 {
     struct timespec dt;
@@ -743,6 +802,7 @@ static void Compile(const char *path)
     g = CreateGlobals();
     f = ParseFile(path);
     ResolveSymbols(&g, &f);
+    TypeCheck(&g, &f);
 
     clock_gettime(CLOCK_MONOTONIC, &t1);
     dt = TimespecToDouble(TimespecSubtract(t1, t0));
