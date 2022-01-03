@@ -55,6 +55,7 @@ colors:
     white:   '#768390'
   bright:
     black:   '#768390'
+    black:   '#545d68'
     red:     '#f47067'
     green:   '#8ddb8c'
     yellow:  '#f69d50'
