@@ -10,6 +10,9 @@
 #include <sys/mman.h>
 
 #define ArrayLen(x) (sizeof(x) / sizeof((x)[0]))
+#define Zero(x) memset(&x, 0, sizeof(x))
+#define ForEach(p, v) for (p = v.buf; p < v.buf + v.len; p++)
+#define ForEachReverse(p, v) for (p = v.buf + v.len - 1; p >= v.buf; p--)
 
 #define Reserve(v, n) \
     do { \
@@ -57,8 +60,6 @@ enum Token {
     TOKEN_FUNCTION,
     TOKEN_LET,
     TOKEN_RETURN,
-    TOKEN_I8,
-    TOKEN_I32,
     TOKEN_NR_KEYWORDS,
     TOKEN_IDENT,
     TOKEN_INT,
@@ -98,8 +99,6 @@ static const char *const TOKEN_STRING[TOKEN_MAX] = {
     [TOKEN_FUNCTION] = "function",
     [TOKEN_LET] = "let",
     [TOKEN_RETURN] = "return",
-    [TOKEN_I8] = "i8",
-    [TOKEN_I32] = "i32",
     [TOKEN_NR_KEYWORDS] = NULL,
     [TOKEN_IDENT] = "<ident>",
     [TOKEN_INT] = "<int>",
@@ -126,6 +125,7 @@ enum SymbolKind {
     SYMBOL_FUNCTION,
     SYMBOL_TYPE,
     SYMBOL_VARIABLE,
+    SYMBOL_PARAM,
 };
 
 struct Symbol {
@@ -139,12 +139,14 @@ enum TypeKind {
     TYPE_I32,
     TYPE_POINTER,
     TYPE_FUNCTION,
+    TYPE_SYMBOL,
 };
 
 struct Type {
     enum TypeKind kind;
     struct FunctionType *function;
     struct Type *pointer_value_type;
+    struct Symbol symbol;
 };
 
 struct Param {
@@ -364,19 +366,27 @@ static const char *ExpectString(struct Parser *p, enum Token t)
     return strndup(s, n);
 }
 
+static struct Symbol ParseSymbol(struct Parser *p)
+{
+    struct Symbol symbol;
+
+    Zero(symbol);
+    symbol.kind = SYMBOL_UNDEFINED;
+    symbol.value = ExpectString(p, TOKEN_IDENT);
+    symbol.definition = NULL;
+
+    return symbol;
+}
+
 static struct Type ParseType(struct Parser *p)
 {
     struct Type t;
 
-    memset(&t, 0, sizeof(t));
+    Zero(t);
     switch (p->token) {
-        case TOKEN_I8:
-            Bump(p);
-            t.kind = TYPE_I8;
-            break;
-        case TOKEN_I32:
-            Bump(p);
-            t.kind = TYPE_I32;
+        case TOKEN_IDENT:
+            t.kind = TYPE_SYMBOL;
+            t.symbol = ParseSymbol(p);
             break;
         case TOKEN_STAR:
             Bump(p);
@@ -406,7 +416,7 @@ static struct FunctionType ParseFunctionType(struct Parser *p)
 {
     struct FunctionType f;
 
-    memset(&f, 0, sizeof(f));
+    Zero(f);
     Expect(p, TOKEN_LPAREN);
     while (p->token != TOKEN_RPAREN) {
         FixedAppend(f.params, ParseParam(p));
@@ -426,7 +436,7 @@ static struct Expr ParseExpr(struct Parser *p)
 {
     struct Expr e;
 
-    memset(&e, 0, sizeof(e));
+    Zero(e);
     switch (p->token) {
         case TOKEN_INT:
             e.kind = EXPR_INT_LITERAL;
@@ -434,9 +444,7 @@ static struct Expr ParseExpr(struct Parser *p)
             break;
         case TOKEN_IDENT:
             e.kind = EXPR_USE_SYMBOL;
-            e.use_symbol.kind = SYMBOL_UNDEFINED;
-            e.use_symbol.value = ExpectString(p, TOKEN_IDENT);
-            e.use_symbol.definition = NULL;
+            e.use_symbol = ParseSymbol(p);
             break;
         default:
             printf("Expected expression, got '%s'\n", TOKEN_STRING[p->token]);
@@ -449,7 +457,7 @@ static struct Stmt ParseStmt(struct Parser *p)
 {
     struct Stmt stmt;
 
-    memset(&stmt, 0, sizeof(stmt));
+    Zero(stmt);
     switch (p->token) {
         case TOKEN_LET:
             Bump(p);
@@ -477,7 +485,7 @@ static struct Block ParseBlock(struct Parser *p)
 {
     struct Block b;
 
-    memset(&b, 0, sizeof(b));
+    Zero(b);
     Expect(p, TOKEN_LBRACE);
     while (p->token != TOKEN_RBRACE) {
         Append(b.stmts, ParseStmt(p));
@@ -491,8 +499,7 @@ static struct Function ParseFunction(struct Parser *p)
 {
     struct Function f;
 
-    memset(&f, 0, sizeof(f));
-
+    Zero(f);
     Expect(p, TOKEN_FUNCTION);
     f.name = ExpectString(p, TOKEN_IDENT);
     f.type = ParseFunctionType(p);
@@ -523,13 +530,190 @@ static void DestroyParser(struct Parser *p)
     munmap((void *)p->file, p->size);
 }
 
-static void ParseFile(const char *path)
+struct FunctionArray {
+    struct Function *buf;
+    int len, cap;
+};
+
+struct File {
+    struct FunctionArray functions;
+};
+
+static struct File ParseFile(const char *path)
 {
     struct Parser p;
+    struct File f;
 
+    Zero(f);
     p = CreateParser(path);
-    ParseFunction(&p);
+
+    while (p.token != TOKEN_EOF) {
+        Append(f.functions, ParseFunction(&p));
+    }
+
     DestroyParser(&p);
+    return f;
+}
+
+struct TypeArray {
+    struct Type *buf;
+    int len, cap;
+};
+
+struct SymbolTable {
+    struct Symbol *buf;
+    int len, cap;
+};
+
+struct Globals {
+    struct TypeArray types;
+    struct SymbolTable symbol_table;
+};
+
+static const char *const PRIMITIVE_TYPE_NAMES[] = {
+    [TYPE_I8] = "i8",
+    [TYPE_I32] = "i32",
+};
+
+static struct Globals CreateGlobals() {
+    struct Globals g;
+    struct Type t;
+    struct Symbol s;
+    int i, n;
+
+    Zero(g);
+
+    n = ArrayLen(PRIMITIVE_TYPE_NAMES);
+    Reserve(g.types, n);
+    Reserve(g.symbol_table, n);
+    g.types.len = n;
+    g.symbol_table.len = n;
+    for (i = 0; i < n; i++) {
+        Zero(t);
+        t.kind = i;
+        g.types.buf[i] = t;
+
+        s.kind = SYMBOL_TYPE;
+        s.value = PRIMITIVE_TYPE_NAMES[i];
+        s.definition = &g.types.buf[i];
+        g.symbol_table.buf[i] = s;
+    }
+
+    return g;
+}
+
+static struct Symbol CreateSymbol(enum SymbolKind kind, const char *value, void *definition)
+{
+    struct Symbol s;
+
+    s.kind = kind;
+    s.value = value;
+    s.definition = definition;
+    return s;
+}
+
+static void ResolveSymbolsInType(struct Globals *g, struct Type *t)
+{
+}
+
+static int CreateScope(struct Globals *g)
+{
+    return g->symbol_table.len;
+}
+
+static void DestroyScope(struct Globals *g, int scope)
+{
+    assert(0 <= scope && scope < g->symbol_table.len);
+    g->symbol_table.len = scope;
+}
+
+static void ResolveSymbolsInFunctionType(struct Globals *g, struct FunctionType *f)
+{
+    struct Param *p;
+
+    ForEach(p, f->params) {
+        ResolveSymbolsInType(g, &p->type);
+        Append(g->symbol_table, CreateSymbol(SYMBOL_PARAM, p->name, p));
+    }
+}
+
+static void ResolveSymbol(struct Globals *g, struct Symbol *symbol)
+{
+    struct Symbol *def;
+    int n, m;
+
+    assert(symbol->kind == SYMBOL_UNDEFINED);
+    ForEachReverse(def, g->symbol_table) {
+        n = strlen(def->value);
+        m = strlen(symbol->value);
+        if (n == m && memcmp(def->value, symbol->value, n) == 0) {
+            *symbol = *def;
+            return;
+        }
+    }
+    printf("Undefined symbol: '%s'\n", symbol->value);
+    abort();
+}
+
+static void ResolveSymbolsInExpr(struct Globals *g, struct Expr *e)
+{
+    switch (e->kind) {
+        case EXPR_INT_LITERAL:
+            // Nothing to do for literals.
+            break;
+        case EXPR_USE_SYMBOL:
+            ResolveSymbol(g, &e->use_symbol);
+            break;
+    }
+}
+
+static void ResolveSymbolsInStmt(struct Globals *g, struct Stmt *stmt)
+{
+    switch (stmt->kind) {
+        case STMT_LET:
+            ResolveSymbolsInExpr(g, &stmt->let.rhs);
+            Append(g->symbol_table, CreateSymbol(SYMBOL_VARIABLE, stmt->let.name, &stmt->let));
+            break;
+        case STMT_RETURN:
+            ResolveSymbolsInExpr(g, &stmt->ret.value);
+            break;
+    }
+}
+
+static void ResolveSymbolsInBlock(struct Globals *g, struct Block *b)
+{
+    struct Stmt *stmt;
+    int scope;
+
+    scope = CreateScope(g);
+    ForEach(stmt, b->stmts) {
+        ResolveSymbolsInStmt(g, stmt);
+    }
+    DestroyScope(g, scope);
+}
+
+static void ResolveSymbolsInFunction(struct Globals *g, struct Function *f)
+{
+    int scope;
+
+    scope = CreateScope(g);
+    ResolveSymbolsInFunctionType(g, &f->type);
+    ResolveSymbolsInBlock(g, &f->body);
+    DestroyScope(g, scope);
+}
+
+static void ResolveSymbols(struct Globals *g, struct File *f)
+{
+    struct Function *fn;
+
+    // Add all function symbols before entering each function.
+    ForEach(fn, f->functions) {
+        Append(g->symbol_table, CreateSymbol(SYMBOL_FUNCTION, fn->name, fn));
+    }
+
+    ForEach(fn, f->functions) {
+        ResolveSymbolsInFunction(g, fn);
+    }
 }
 
 static struct timespec TimespecSubtract(struct timespec a, struct timespec b)
@@ -551,15 +735,18 @@ static void Compile(const char *path)
 {
     struct timespec t0, t1;
     double dt;
+    struct Globals g;
+    struct File f;
 
-    printf("Compiling '%s'...\n", path);
     clock_gettime(CLOCK_MONOTONIC, &t0);
 
-    ParseFile(path);
+    g = CreateGlobals();
+    f = ParseFile(path);
+    ResolveSymbols(&g, &f);
 
     clock_gettime(CLOCK_MONOTONIC, &t1);
     dt = TimespecToDouble(TimespecSubtract(t1, t0));
-    printf("Done: took %f seconds\n", dt);
+    printf("Compiling '%s' took %f seconds.\n", path, dt);
 }
 
 int main(int argc, char **argv)
