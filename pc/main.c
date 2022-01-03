@@ -9,6 +9,9 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include <sys/mman.h>
+#include <llvm-c/Core.h>
+#include <llvm-c/TargetMachine.h>
+#include <llvm-c/Analysis.h>
 
 #define ArrayLen(x) (sizeof(x) / sizeof((x)[0]))
 #define Zero(x) memset(&x, 0, sizeof(x))
@@ -857,6 +860,14 @@ static void TypeCheck(Globals *g, File *f)
     g->current_function = NULL;
 }
 
+static void Codegen(Globals *g, File *f)
+{
+    LLVMInitializeX86TargetInfo();
+    LLVMInitializeX86Target();
+    LLVMInitializeX86TargetMC();
+    LLVMInitializeX86AsmPrinter();
+}
+
 static struct timespec TimespecSubtract(struct timespec a, struct timespec b)
 {
     struct timespec dt;
@@ -885,6 +896,7 @@ static void Compile(const char *path)
     f = ParseFile(path);
     ResolveSymbols(&g, &f);
     TypeCheck(&g, &f);
+    Codegen(&g, &f);
 
     clock_gettime(CLOCK_MONOTONIC, &t1);
     dt = TimespecToDouble(TimespecSubtract(t1, t0));
