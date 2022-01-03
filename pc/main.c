@@ -9,12 +9,18 @@
 #include <sys/stat.h>
 #include <sys/mman.h>
 
-#define APPEND(v, x) \
+#define RESERVE(v, n) \
     do { \
-        if (v.len >= v.cap) { \
+        if (v.len + n > v.cap) { \
             v.cap = v.cap ? v.cap + v.cap / 2 : 16; \
             v.buf = realloc(v.buf, v.cap * sizeof(*v.buf)); \
         } \
+        assert(v.len + n <= v.cap); \
+    } while (0)
+
+#define APPEND(v, x) \
+    do { \
+        RESERVE(v, 1); \
         v.buf[v.len++] = x; \
     } while (0)
 
@@ -127,13 +133,13 @@ static void parse_ident(Parser *p)
     p->token = TOKEN_IDENT;
     for (; p->end < p->size; p->end++) {
         switch (p->file[p->end]) {
-        case 'a'...'z':
-        case 'A'...'Z':
-        case '_':
-        case '0'...'9':
-            continue;
-        default:
-            break;
+            case 'a'...'z':
+            case 'A'...'Z':
+            case '_':
+            case '0'...'9':
+                continue;
+            default:
+                break;
         }
         break;
     }
@@ -155,10 +161,10 @@ static void parse_int(Parser *p)
     p->token = TOKEN_INT;
     for (; p->end < p->size; p->end++) {
         switch (p->file[p->end]) {
-        case '0'...'9':
-            continue;
-        default:
-            break;
+            case '0'...'9':
+                continue;
+            default:
+                break;
         }
         break;
     }
@@ -169,18 +175,18 @@ static void print_escaped_char(char c)
     const char *s;
 
     switch (c) {
-    case '\n':
-        s = "\\n";
-        break;
-    case '\t':
-        s = "\\t";
-        break;
-    case '\r':
-        s = "\\r";
-        break;
-    default:
-        putchar(c);
-        return;
+        case '\n':
+            s = "\\n";
+            break;
+        case '\t':
+            s = "\\t";
+            break;
+        case '\r':
+            s = "\\r";
+            break;
+        default:
+            putchar(c);
+            return;
     }
     puts(s);
 }
@@ -198,56 +204,59 @@ static void bump(Parser *p)
 
         c = p->file[p->end];
         switch (c) {
-        case '\n':
-            p->line_no++;
-            p->end++;
-            continue;
-        case ' ':
-        case '\t':
-        case '\r':
-            p->end++;
-            continue;
-        case 'a'...'z':
-        case 'A'...'Z':
-        case '_':
-            parse_ident(p);
-            break;
-        case '0'...'9':
-            parse_int(p);
-            break;
-        case '-':
-            p->end++;
-            p->token = TOKEN_MINUS;
-            if (p->end < p->size && p->file[p->end] == '>') {
+            case '\n':
+                p->line_no++;
                 p->end++;
-                p->token = TOKEN_ARROW;
-            }
-            break;
-        case '(':
-        case ')':
-        case '{':
-        case '}':
-        case ':':
-        case ';':
-        case ',':
-        case '*':
-        case '+':
-        case '=':
-            p->token = CHAR_TOKEN[(int)c];
-            p->end++;
-            break;
-        default:
-            printf("Unexpected character: '");
-            print_escaped_char(c);
-            printf("'\n");
-            exit(1);
+                continue;
+            case ' ':
+            case '\t':
+            case '\r':
+                p->end++;
+                continue;
+            case 'a'...'z':
+            case 'A'...'Z':
+            case '_':
+                parse_ident(p);
+                break;
+            case '0'...'9':
+                parse_int(p);
+                break;
+            case '-':
+                p->end++;
+                p->token = TOKEN_MINUS;
+                if (p->end < p->size && p->file[p->end] == '>') {
+                    p->end++;
+                    p->token = TOKEN_ARROW;
+                }
+                break;
+            case '(':
+            case ')':
+            case '{':
+            case '}':
+            case ':':
+            case ';':
+            case ',':
+            case '*':
+            case '+':
+            case '=':
+                p->token = CHAR_TOKEN[(int)c];
+                p->end++;
+                break;
+            default:
+                printf("Unexpected character: '");
+                print_escaped_char(c);
+                printf("'\n");
+                exit(1);
         }
         break;
     }
 }
 
 struct TokenArray {
-    Token *buf;
+    struct {
+        Token token;
+        int start, end;
+    } *buf;
     int cap, len;
 };
 
@@ -267,7 +276,11 @@ static TokenArray parse_file(const char *path)
     t.buf = NULL;
     t.cap = t.len = 0;
     for (bump(&p); p.token != TOKEN_EOF; bump(&p)) {
-        APPEND(t, p.token);
+        RESERVE(t, 1);
+        t.buf[t.len].token = p.token;
+        t.buf[t.len].start = p.start;
+        t.buf[t.len].end = p.end;
+        t.len++;
     }
 
     munmap(f.addr, f.size);
@@ -295,6 +308,7 @@ static void compile(const char *path)
     double dt;
     TokenArray tokens;
     int i;
+    MemoryMappedFile f;
 
     printf("Compiling '%s'...", path);
     clock_gettime(CLOCK_MONOTONIC, &t0);
@@ -305,11 +319,25 @@ static void compile(const char *path)
     dt = timespec_to_double(timespec_subtract(t1, t0));
     printf("done: %f seconds\n", dt);
 
-    printf("tokens: ");
+    f = mmap_file_read_only(path);
     for (i = 0; i < tokens.len; i++) {
-        printf("%s ", TOKEN_STRING[tokens.buf[i]]);
+        Token t = tokens.buf[i].token;
+        int start = tokens.buf[i].start;
+        int end = tokens.buf[i].end;
+        const char *s = &f.addr[start];
+        int n = end - start;
+        switch (t) {
+            case TOKEN_IDENT:
+            case TOKEN_INT:
+                printf("'%.*s' ", n, s);
+                break;
+            default:
+                printf("%s ", TOKEN_STRING[t]);
+                break;
+        }
     }
     printf("\n");
+    munmap(f.addr, f.size);
 }
 
 int main(int argc, char **argv)
