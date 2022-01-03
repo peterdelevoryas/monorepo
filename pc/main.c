@@ -9,7 +9,7 @@
 #include <sys/stat.h>
 #include <sys/mman.h>
 
-#define RESERVE(v, n) \
+#define Reserve(v, n) \
     do { \
         if (v.len + n > v.cap) { \
             v.cap = v.cap ? v.cap + v.cap / 2 : 16; \
@@ -18,27 +18,22 @@
         assert(v.len + n <= v.cap); \
     } while (0)
 
-#define APPEND(v, x) \
+#define Append(v, x) \
     do { \
-        RESERVE(v, 1); \
+        Reserve(v, 1); \
         v.buf[v.len++] = x; \
     } while (0)
-
-typedef enum Token Token;
-typedef struct Parser Parser;
-typedef struct MemoryMappedFile MemoryMappedFile;
-typedef struct TokenArray TokenArray;
 
 struct MemoryMappedFile {
     void *addr;
     size_t size;
 };
 
-static MemoryMappedFile mmap_file_read_only(const char *path)
+static struct MemoryMappedFile Mmap(const char *path)
 {
     int fd;
     struct stat st;
-    MemoryMappedFile f;
+    struct MemoryMappedFile f;
 
     fd = open(path, O_RDONLY | O_CLOEXEC);
     assert(fd != -1);
@@ -78,7 +73,7 @@ enum Token {
     TOKEN_MAX,
 };
 
-const static uint8_t CHAR_TOKEN[256] = {
+const static uint8_t char_to_token[256] = {
     ['('] = TOKEN_LPAREN,
     [')'] = TOKEN_RPAREN,
     ['{'] = TOKEN_LBRACE,
@@ -91,7 +86,7 @@ const static uint8_t CHAR_TOKEN[256] = {
     ['='] = TOKEN_EQ,
 };
 
-static const char *const TOKEN_STRING[TOKEN_MAX] = {
+static const char *const token_to_string[TOKEN_MAX] = {
     [TOKEN_FUNCTION] = "function",
     [TOKEN_LET] = "let",
     [TOKEN_RETURN] = "return",
@@ -121,11 +116,11 @@ static const char *const TOKEN_STRING[TOKEN_MAX] = {
 struct Parser {
     const char *path, *file;
     size_t size;
-    Token token;
+    enum Token token;
     int start, end, line_no;
 };
 
-static void parse_ident(Parser *p)
+static void ParseIdent(struct Parser *p)
 {
     int i, n1, n2;
     const char *s1, *s2;
@@ -147,7 +142,7 @@ static void parse_ident(Parser *p)
     n1 = p->end - p->start;
     s1 = p->file + p->start;
     for (i = 0; i < TOKEN_NR_KEYWORDS; i++) {
-        s2 = TOKEN_STRING[i];
+        s2 = token_to_string[i];
         n2 = strlen(s2);
         if (n1 == n2 && memcmp(s1, s2, n1) == 0) {
             p->token = i;
@@ -156,7 +151,7 @@ static void parse_ident(Parser *p)
     }
 }
 
-static void parse_int(Parser *p)
+static void ParseInt(struct Parser *p)
 {
     p->token = TOKEN_INT;
     for (; p->end < p->size; p->end++) {
@@ -170,7 +165,7 @@ static void parse_int(Parser *p)
     }
 }
 
-static void print_escaped_char(char c)
+static void PrintEscapedChar(char c)
 {
     const char *s;
 
@@ -191,7 +186,7 @@ static void print_escaped_char(char c)
     puts(s);
 }
 
-static void bump(Parser *p)
+static void Bump(struct Parser *p)
 {
     char c;
 
@@ -216,10 +211,10 @@ static void bump(Parser *p)
             case 'a'...'z':
             case 'A'...'Z':
             case '_':
-                parse_ident(p);
+                ParseIdent(p);
                 break;
             case '0'...'9':
-                parse_int(p);
+                ParseInt(p);
                 break;
             case '-':
                 p->end++;
@@ -239,12 +234,12 @@ static void bump(Parser *p)
             case '*':
             case '+':
             case '=':
-                p->token = CHAR_TOKEN[(int)c];
+                p->token = char_to_token[(int)c];
                 p->end++;
                 break;
             default:
                 printf("Unexpected character: '");
-                print_escaped_char(c);
+                PrintEscapedChar(c);
                 printf("'\n");
                 exit(1);
         }
@@ -254,19 +249,19 @@ static void bump(Parser *p)
 
 struct TokenArray {
     struct {
-        Token token;
+        enum Token token;
         int start, end;
     } *buf;
     int cap, len;
 };
 
-static TokenArray parse_file(const char *path)
+static struct TokenArray ParseFile(const char *path)
 {
-    MemoryMappedFile f;
-    Parser p;
-    TokenArray t;
+    struct MemoryMappedFile f;
+    struct Parser p;
+    struct TokenArray t;
 
-    f = mmap_file_read_only(path);
+    f = Mmap(path);
     p.path = path;
     p.file = f.addr;
     p.size = f.size;
@@ -275,8 +270,8 @@ static TokenArray parse_file(const char *path)
     p.line_no = 1;
     t.buf = NULL;
     t.cap = t.len = 0;
-    for (bump(&p); p.token != TOKEN_EOF; bump(&p)) {
-        RESERVE(t, 1);
+    for (Bump(&p); p.token != TOKEN_EOF; Bump(&p)) {
+        Reserve(t, 1);
         t.buf[t.len].token = p.token;
         t.buf[t.len].start = p.start;
         t.buf[t.len].end = p.end;
@@ -287,7 +282,7 @@ static TokenArray parse_file(const char *path)
     return t;
 }
 
-static struct timespec timespec_subtract(struct timespec a, struct timespec b)
+static struct timespec TimespecSubtract(struct timespec a, struct timespec b)
 {
     struct timespec dt;
 
@@ -297,42 +292,46 @@ static struct timespec timespec_subtract(struct timespec a, struct timespec b)
     return dt;
 }
 
-static double timespec_to_double(struct timespec t)
+static double TimespecToDouble(struct timespec t)
 {
     return (double)t.tv_sec + (double)t.tv_nsec * 1.0e-9;
 }
 
-static void compile(const char *path)
+static void Compile(const char *path)
 {
     struct timespec t0, t1;
     double dt;
-    TokenArray tokens;
     int i;
-    MemoryMappedFile f;
+    struct TokenArray tokens;
+    struct MemoryMappedFile f;
+    enum Token t;
+    int start, end;
+    const char *s;
+    int n;
 
     printf("Compiling '%s'...", path);
     clock_gettime(CLOCK_MONOTONIC, &t0);
 
-    tokens = parse_file(path);
+    tokens = ParseFile(path);
 
     clock_gettime(CLOCK_MONOTONIC, &t1);
-    dt = timespec_to_double(timespec_subtract(t1, t0));
+    dt = TimespecToDouble(TimespecSubtract(t1, t0));
     printf("done: %f seconds\n", dt);
 
-    f = mmap_file_read_only(path);
+    f = Mmap(path);
     for (i = 0; i < tokens.len; i++) {
-        Token t = tokens.buf[i].token;
-        int start = tokens.buf[i].start;
-        int end = tokens.buf[i].end;
-        const char *s = &f.addr[start];
-        int n = end - start;
+        t = tokens.buf[i].token;
+        start = tokens.buf[i].start;
+        end = tokens.buf[i].end;
+        s = &f.addr[start];
+        n = end - start;
         switch (t) {
             case TOKEN_IDENT:
             case TOKEN_INT:
                 printf("'%.*s' ", n, s);
                 break;
             default:
-                printf("%s ", TOKEN_STRING[t]);
+                printf("%s ", token_to_string[t]);
                 break;
         }
     }
@@ -349,6 +348,6 @@ int main(int argc, char **argv)
         return 0;
     }
     for (i = 1; i < argc; i++) {
-        compile(argv[i]);
+        Compile(argv[i]);
     }
 }
