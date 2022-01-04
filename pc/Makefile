@@ -5,7 +5,7 @@ LLVM := $(shell llvm-config --cflags --ldflags --libs core x86codegen --system-l
 LDFLAGS := -fno-rtti -lc++ $(LLVM)
 
 pc: main.c
-	$(CC) $(CFLAGS) $< -o $@ $(LDFLAGS)
+	@$(CC) $(CFLAGS) $< -o $@ $(LDFLAGS)
 
 .PHONY: test
 

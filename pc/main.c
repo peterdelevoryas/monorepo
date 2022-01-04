@@ -10,6 +10,7 @@
 #include <sys/stat.h>
 #include <sys/mman.h>
 #include <llvm-c/Core.h>
+#include <llvm-c/Target.h>
 #include <llvm-c/TargetMachine.h>
 #include <llvm-c/Analysis.h>
 
@@ -605,6 +606,7 @@ struct FunctionArray {
 };
 
 struct File {
+    const char *path;
     FunctionArray functions;
 };
 
@@ -614,6 +616,7 @@ static File ParseFile(const char *path)
     File f;
 
     Zero(f);
+    f.path = path;
     p = CreateParser(path);
 
     while (p.token != TOKEN_EOF) {
@@ -637,6 +640,8 @@ struct SymbolTable {
 struct Globals {
     SymbolTable symbol_table;
     Function *current_function;
+    LLVMBuilderRef builder;
+    LLVMModuleRef module;
 };
 
 static Symbol CreateSymbol(SymbolKind kind, const char *value, void *definition)
@@ -860,12 +865,49 @@ static void TypeCheck(Globals *g, File *f)
     g->current_function = NULL;
 }
 
+static void CodegenFunction(Globals *g, Function *f)
+{
+    
+}
+
 static void Codegen(Globals *g, File *f)
 {
+    char *triple, *error;
+    LLVMTargetRef target;
+    LLVMTargetMachineRef machine;
+    LLVMTargetDataRef layout;
+    LLVMModuleRef module;
+    Function *fn;
+
     LLVMInitializeX86TargetInfo();
     LLVMInitializeX86Target();
     LLVMInitializeX86TargetMC();
     LLVMInitializeX86AsmPrinter();
+
+    triple = LLVMGetDefaultTargetTriple();
+    if (LLVMGetTargetFromTriple(triple, &target, &error) != 0) {
+        printf("LLVMGetTargetFromTriple: %s\n", error);
+        abort();
+    }
+
+    machine = LLVMCreateTargetMachine(target, triple, "generic", "",
+                                      LLVMCodeGenLevelNone,
+                                      LLVMRelocDefault,
+                                      LLVMCodeModelDefault);
+    layout = LLVMCreateTargetDataLayout(machine);
+    module = LLVMModuleCreateWithName(f->path);
+    LLVMSetModuleDataLayout(module, layout);
+    LLVMSetTarget(module, triple);
+
+    g->builder = LLVMCreateBuilder();
+    g->module = module;
+    ForEach(fn, f->functions) {
+        CodegenFunction(g, fn);
+    }
+
+    LLVMDisposeMessage(triple);
+    LLVMDisposeMessage(error);
+    LLVMDisposeTargetMachine(machine);
 }
 
 static struct timespec TimespecSubtract(struct timespec a, struct timespec b)
