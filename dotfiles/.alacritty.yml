@@ -1,14 +1,11 @@
 window:
   dimensions:
     columns: 100
-    lines: 50
-  padding:
-    x: 10
-    y: 10
+    lines: 40
 
 font:
-  offset:
-    y: 10
+  #offset:
+    #y: 10
   normal:
     style: Regular
     family: Roboto Mono
@@ -16,7 +13,7 @@ font:
     family: Consolas
   bold:
     style: Regular
-  size: 18
+  size: 22
 
 cursor:
   style: Block
@@ -38,24 +35,26 @@ colors:
   primary:
     background: '#171717'
     background: '#22272e'
+    background: '#333a45'
     foreground: '#999da2'
     foreground: '#adbac7'
     foreground: '#768390'
+    foreground: '#8d9dac'
   normal:
     black:   '#171717'
     black:   '#22272e'
+    black: '#333a45'
     red:     '#f47067'
     green:   '#8ddb8c'
     yellow:  '#f69d50'
     blue:    '#6cb6ff'
     magenta: '#dcbdfb'
     cyan:    '#96d0ff'
-    white:   '#999da2'
-    white:   '#adbac7'
     white:   '#768390'
+    white:   '#8d9dac'
   bright:
-    black:   '#768390'
     black:   '#545d68'
+    black:   '#768390'
     red:     '#f47067'
     green:   '#8ddb8c'
     yellow:  '#f69d50'
