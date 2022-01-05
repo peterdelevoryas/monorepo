@@ -8,12 +8,12 @@ font:
     #y: 10
   normal:
     style: Regular
-    family: Roboto Mono
     family: Menlo
+    family: Roboto Mono
     family: Consolas
   bold:
     style: Regular
-  size: 22
+  size: 21
 
 cursor:
   style: Block
@@ -34,24 +34,23 @@ cursor:
 colors:
   primary:
     background: '#171717'
-    background: '#22272e'
     background: '#333a45'
+    background: '#22272e'
     foreground: '#999da2'
     foreground: '#adbac7'
-    foreground: '#768390'
     foreground: '#8d9dac'
+    foreground: '#768390'
   normal:
-    black:   '#171717'
+    black:   '#333a45'
     black:   '#22272e'
-    black: '#333a45'
     red:     '#f47067'
     green:   '#8ddb8c'
     yellow:  '#f69d50'
     blue:    '#6cb6ff'
     magenta: '#dcbdfb'
     cyan:    '#96d0ff'
-    white:   '#768390'
     white:   '#8d9dac'
+    white:   '#768390'
   bright:
     black:   '#545d68'
     black:   '#768390'
