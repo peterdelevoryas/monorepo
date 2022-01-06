@@ -4,8 +4,8 @@ window:
     lines: 40
 
 font:
-  #offset:
-    #y: 10
+  # offset:
+  #   y: 10
   normal:
     style: Regular
     family: Menlo
@@ -13,36 +13,23 @@ font:
     family: Consolas
   bold:
     style: Regular
-  size: 21
+  size: 22
 
 cursor:
   style: Block
 
-# The 'Dark dimmed' colorscheme from Github.
-#colors:
-# primary:
-#   foreground: '#999DA2'
-#   background: '#171717'
-#
-# normal:
-#   black: '#171717'
-#   white: '#999DA2'
-#     #  green: '#80C159'
-#     #bright:
-#     #  green: '#80C159'
-
 colors:
   primary:
     background: '#171717'
-    background: '#333a45'
     background: '#22272e'
+    background: '#333a45'
     foreground: '#999da2'
     foreground: '#adbac7'
     foreground: '#8d9dac'
     foreground: '#768390'
   normal:
-    black:   '#333a45'
     black:   '#22272e'
+    black:   '#333a45'
     red:     '#f47067'
     green:   '#8ddb8c'
     yellow:  '#f69d50'
