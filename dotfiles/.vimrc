@@ -4,8 +4,6 @@ endfunction
 
 au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
 
-autocmd BufNewFile,BufRead *.pd setfiletype rust
-
 filetype plugin indent on
 syntax on
 set backspace=indent,eol,start
@@ -23,9 +21,8 @@ set notermguicolors
 set noswapfile
 set background=dark
 set textwidth=80
-"set sts=2 ts=2 sw=2 expandtab
 set sts=4 ts=4 sw=4 expandtab
-"autocmd FileType cpp setlocal sw=2 ts=2 sts=2
+"set sts=2 ts=2 sw=2 expandtab
 
 augroup ft_c
   autocmd!
@@ -57,7 +54,7 @@ hi StatusLine   ctermfg=0 ctermbg=7
 hi StatusLineNC ctermfg=0 ctermbg=7
 hi VertSplit    ctermfg=0 ctermbg=7
 hi NonText      ctermfg=0
-hi MatchParen   ctermfg=4 ctermbg=0
+hi MatchParen   ctermfg=11 ctermbg=0
 hi Visual       ctermfg=0
 hi Todo         ctermfg=8 ctermbg=0
 

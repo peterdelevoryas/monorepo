@@ -1,50 +1,46 @@
 window:
   dimensions:
     columns: 100
-    lines: 40
+    lines: 20
+  padding:
+    x: 15
+    y: 5
 
 font:
-  # offset:
-  #   y: 10
+  offset:
+    y: 5
   normal:
-    style: Regular
-    family: Menlo
     family: Roboto Mono
+    family: DejaVu Sans Mono
+    family: Menlo
+    family: Droid Sans Mono
     family: Consolas
   bold:
     style: Regular
-  size: 22
+  size: 14
 
 cursor:
-  style: Block
+  style: Underline
 
 colors:
   primary:
-    background: '#171717'
     background: '#22272e'
-    background: '#333a45'
-    foreground: '#999da2'
-    foreground: '#adbac7'
-    foreground: '#8d9dac'
     foreground: '#768390'
   normal:
     black:   '#22272e'
-    black:   '#333a45'
-    red:     '#f47067'
-    green:   '#8ddb8c'
-    yellow:  '#f69d50'
-    blue:    '#6cb6ff'
-    magenta: '#dcbdfb'
-    cyan:    '#96d0ff'
-    white:   '#8d9dac'
     white:   '#768390'
-  bright:
-    black:   '#545d68'
-    black:   '#768390'
     red:     '#f47067'
     green:   '#8ddb8c'
     yellow:  '#f69d50'
     blue:    '#6cb6ff'
     magenta: '#dcbdfb'
     cyan:    '#96d0ff'
-    white:   '#adbac7'
+  bright:
+    black:   '#545d78'
+    white:   '#768390'
+    red:     '#f47067'
+    green:   '#8ddb8c'
+    yellow:  '#f69d50'
+    blue:    '#6cb6ff'
+    magenta: '#dcbdfb'
+    cyan:    '#96d0ff'
