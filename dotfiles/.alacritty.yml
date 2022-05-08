@@ -1,7 +1,7 @@
 window:
   dimensions:
-    columns: 100
-    lines: 20
+    columns: 150
+    lines: 50
 
 font:
   #offset:
@@ -9,43 +9,43 @@ font:
   normal:
     family: .SF NS Mono
     family: Droid Sans Mono
-    family: Roboto Mono
     family: Consolas
+    family: Roboto Mono
     family: Menlo
     style: Regular
   bold:
     style: Regular
-  size: 20
+  size: 14
 
 cursor:
   style: Block
 
-colors:
-  primary:
-    background: '#1e1e1e' #Background from Dark Theme
-    background: '#18191A'
-    background: '#000000'
-    foreground: '#999da2'
-  normal:
-    black:   '#1e1e1e'
-    black:   '#18191A'
-    black:   '#000000'
-    red:     '#f44747'
-    green:   '#608b4e'
-    yellow:  '#ce9178'
-    blue:    '#569cd6'
-    magenta: '#c586c0'
-    cyan:    '#9cdcfe'
-    white:   '#999da2'
-  bright:
-    black:   '#808080'
-    red:     '#f44747'
-    green:   '#b5cea8'
-    yellow:  '#dcdcaa'
-    blue:    '#569cd6'
-    magenta: '#c586c0'
-    cyan:    '#9cdcfe'
-    white:   '#999da2'
+    #colors:
+    #  primary:
+    #    background: '#1e1e1e' #Background from Dark Theme
+    #    background: '#18191A'
+    #    background: '#000000'
+    #    foreground: '#999da2'
+    #  normal:
+    #    black:   '#1e1e1e'
+    #    black:   '#18191A'
+    #    black:   '#000000'
+    #    red:     '#f44747'
+    #    green:   '#608b4e'
+    #    yellow:  '#ce9178'
+    #    blue:    '#569cd6'
+    #    magenta: '#c586c0'
+    #    cyan:    '#9cdcfe'
+    #    white:   '#999da2'
+    #  bright:
+    #    black:   '#808080'
+    #    red:     '#f44747'
+    #    green:   '#b5cea8'
+    #    yellow:  '#dcdcaa'
+    #    blue:    '#569cd6'
+    #    magenta: '#c586c0'
+    #    cyan:    '#9cdcfe'
+    #    white:   '#999da2'
 
     #colors:
     #  primary:
@@ -70,25 +70,25 @@ colors:
     #    cyan:    '0x00ffff'
     #    white:   '0xffffff'
 
-    #colors:
-    #  primary:
-    #    background: '#22272e'
-    #    foreground: '#768390'
-    #  normal:
-    #    black:   '#22272e'
-    #    white:   '#768390'
-    #    red:     '#f47067'
-    #    green:   '#8ddb8c'
-    #    yellow:  '#f69d50'
-    #    blue:    '#6cb6ff'
-    #    magenta: '#dcbdfb'
-    #    cyan:    '#96d0ff'
-    #  bright:
-    #    black:   '#545d78'
-    #    white:   '#768390'
-    #    red:     '#f47067'
-    #    green:   '#8ddb8c'
-    #    yellow:  '#f69d50'
-    #    blue:    '#6cb6ff'
-    #    magenta: '#dcbdfb'
-    #    cyan:    '#96d0ff'
+colors:
+  primary:
+    background: '#22272e'
+    foreground: '#768390'
+  normal:
+    black:   '#22272e'
+    white:   '#768390'
+    red:     '#f47067'
+    green:   '#8ddb8c'
+    yellow:  '#f69d50'
+    blue:    '#6cb6ff'
+    magenta: '#dcbdfb'
+    cyan:    '#96d0ff'
+  bright:
+    black:   '#545d78'
+    white:   '#768390'
+    red:     '#f47067'
+    green:   '#8ddb8c'
+    yellow:  '#f69d50'
+    blue:    '#6cb6ff'
+    magenta: '#dcbdfb'
+    cyan:    '#96d0ff'
