@@ -1,3 +1,28 @@
 [user]
-	email = pdel@fb.com
-	name = Peter Delevoryas
+    name = Peter Delevoryas
+    email = pdel@fb.com
+#[http]
+#    proxy = https://fwdproxy:8082
+#    proxySSLCert=/var/facebook/credentials/pdel/x509/pdel.pem
+#    proxySSLKey=/var/facebook/credentials/pdel/x509/pdel.pem
+#[https]
+#    proxy = https://fwdproxy:8082
+#    proxySSLCert=/var/facebook/credentials/pdel/x509/pdel.pem
+#    proxySSLKey=/var/facebook/credentials/pdel/x509/pdel.pem
+[branch]
+    autosetuprebase = always
+[sendemail]
+    confirm = "never"
+    from = Peter Delevoryas <pdel@fb.com>
+    envelopesender = pdel@fb.com
+    #annotate = yes
+[alias]
+    lg = log --pretty='format:%C(yellow)%h%C(reset) %as %al:%C(blue)%d%C(reset) %s'
+    lg1 = log --pretty=oneline
+    send-test-email = send-email --to=pdel@fb.com
+    send-qemu-email = send-email --cc="pdel@fb.com,irischenlj@fb.com,patrick@stwcx.xyz,qemu-arm@nongnu.org,qemu-devel@nongnu.org,clg@kaod.org"
+    send-slirp-email = send-email --cc="pdel@fb.com,patrick@stwcx.xyz,slirp@lists.freedesktop.org"
+[format]
+    signOff = yes
+[core]
+    preloadindex = true
