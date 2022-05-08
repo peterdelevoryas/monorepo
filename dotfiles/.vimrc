@@ -40,39 +40,28 @@ au BufRead,BufNewFile,BufEnter */linux/*,i2c-ast.c :set sw=8 ts=8 sts=8 noexpand
 augroup ft_c
   autocmd!
   autocmd Syntax c syn keyword Statement let loop
-  autocmd Syntax c syn match dFunction "\zs\(\k\w*\)*\ze([^)]*)\s*{"
-  autocmd Syntax c syn match dFunction "\zs\(\k\w*\)*\ze([^)]*)\s*$"
+  "autocmd Syntax c syn match dFunction "\zs\(\k\w*\)*\ze([^)]*)\s*{"
+  "autocmd Syntax c syn match dFunction "\zs\(\k\w*\)*\ze([^)]*)\s*$"
   autocmd Syntax c syn keyword Type uint8_t uint16_t uint32_t uint64_t
   autocmd Syntax c syn keyword Type int8_t int16_t int32_t int64_t
   autocmd Syntax c syn keyword Type i8 i16 i32 i64 u8 u16 u32 u64
 augroup end
 
-augroup ft_cpp
-  autocmd!
-  autocmd Syntax cpp syn keyword Statement let loop
-  autocmd Syntax cpp syn match dFunction "\zs\(\k\w*\)*\s*\ze("
-  autocmd Syntax cpp syn keyword Type uint8_t uint16_t uint32_t uint64_t
-  autocmd Syntax cpp syn keyword Type int8_t int16_t int32_t int64_t
-  autocmd Syntax cpp syn keyword Type i8 i16 i32 i64 u8 u16 u32 u64
-augroup end
+"augroup ft_cpp
+"  autocmd!
+"  autocmd Syntax cpp syn keyword Statement let loop
+"  "autocmd Syntax cpp syn match dFunction "\zs\(\k\w*\)*\s*\ze("
+"  autocmd Syntax cpp syn keyword Type uint8_t uint16_t uint32_t uint64_t
+"  autocmd Syntax cpp syn keyword Type int8_t int16_t int32_t int64_t
+"  autocmd Syntax cpp syn keyword Type i8 i16 i32 i64 u8 u16 u32 u64
+"augroup end
 
-augroup ft_objcpp
-  autocmd!
-  autocmd Syntax objcpp syn keyword Statement let var loop
-augroup end
-
-augroup ft_rust
-  autocmd!
-  autocmd Syntax rust syn keyword Statement function
-  "autocmd Syntax rust hi Statement ctermfg=2
-  "autocmd Syntax rust hi PreProc ctermfg=12
-augroup end
+hi StatusLine     ctermfg=0 ctermbg=7
+hi StatusLineNC   ctermfg=0 ctermbg=7
+hi VertSplit      ctermfg=0 ctermbg=7
 
 " Visual Studio Code
 "hi Comment        ctermfg=8
-"hi StatusLine     ctermfg=0 ctermbg=7
-"hi StatusLineNC   ctermfg=0 ctermbg=7
-"hi VertSplit      ctermfg=0 ctermbg=7
 "hi NonText        ctermfg=0
 "hi MatchParen     ctermfg=11 ctermbg=0
 "hi Visual         ctermfg=0

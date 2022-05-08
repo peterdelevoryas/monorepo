@@ -15,80 +15,87 @@ font:
     style: Regular
   bold:
     style: Regular
-  size: 14
+  size: 16
 
 cursor:
   style: Block
 
-    #colors:
-    #  primary:
-    #    background: '#1e1e1e' #Background from Dark Theme
-    #    background: '#18191A'
-    #    background: '#000000'
-    #    foreground: '#999da2'
-    #  normal:
-    #    black:   '#1e1e1e'
-    #    black:   '#18191A'
-    #    black:   '#000000'
-    #    red:     '#f44747'
-    #    green:   '#608b4e'
-    #    yellow:  '#ce9178'
-    #    blue:    '#569cd6'
-    #    magenta: '#c586c0'
-    #    cyan:    '#9cdcfe'
-    #    white:   '#999da2'
-    #  bright:
-    #    black:   '#808080'
-    #    red:     '#f44747'
-    #    green:   '#b5cea8'
-    #    yellow:  '#dcdcaa'
-    #    blue:    '#569cd6'
-    #    magenta: '#c586c0'
-    #    cyan:    '#9cdcfe'
-    #    white:   '#999da2'
-
-    #colors:
-    #  primary:
-    #    background: '0x171717'
-    #    foreground: '0x999da2'
-    #  normal:
-    #    black:   '0x171717'
-    #    red:     '0xDC373C'
-    #    green:   '0x007E59'
-    #    yellow:  '0xF7B928'
-    #    blue:    '0x2D88FF'
-    #    magenta: '0xD24294'
-    #    cyan:    '0x54C7EC'
-    #    white:   '0x999da2'
-    #  bright:
-    #    black:   '0x3c4043'
-    #    red:     '0xff0000'
-    #    green:   '0x00ff00'
-    #    yellow:  '0xF7B928'
-    #    blue:    '0x5c5cff'
-    #    magenta: '0xff00ff'
-    #    cyan:    '0x00ffff'
-    #    white:   '0xffffff'
-
 colors:
   primary:
-    background: '#22272e'
-    foreground: '#768390'
+    foreground: '#999da2'
   normal:
-    black:   '#22272e'
-    white:   '#768390'
-    red:     '#f47067'
-    green:   '#8ddb8c'
-    yellow:  '#f69d50'
-    blue:    '#6cb6ff'
-    magenta: '#dcbdfb'
-    cyan:    '#96d0ff'
-  bright:
-    black:   '#545d78'
-    white:   '#768390'
-    red:     '#f47067'
-    green:   '#8ddb8c'
-    yellow:  '#f69d50'
-    blue:    '#6cb6ff'
-    magenta: '#dcbdfb'
-    cyan:    '#96d0ff'
+    white: '#999da2'
+
+#colors:
+#  primary:
+#    background: '#1e1e1e' #Background from Dark Theme
+#    background: '#18191A'
+#    background: '#000000'
+#    foreground: '#999da2'
+#  normal:
+#    black:   '#1e1e1e'
+#    black:   '#18191A'
+#    black:   '#000000'
+#    red:     '#f44747'
+#    green:   '#608b4e'
+#    yellow:  '#ce9178'
+#    blue:    '#569cd6'
+#    magenta: '#c586c0'
+#    cyan:    '#9cdcfe'
+#    white:   '#999da2'
+#  bright:
+#    black:   '#808080'
+#    red:     '#f44747'
+#    green:   '#b5cea8'
+#    yellow:  '#dcdcaa'
+#    blue:    '#569cd6'
+#    magenta: '#c586c0'
+#    cyan:    '#9cdcfe'
+#    white:   '#999da2'
+
+#colors:
+#  primary:
+#    background: '0x171717'
+#    foreground: '0x999da2'
+#  normal:
+#    black:   '0x171717'
+#    red:     '0xDC373C'
+#    green:   '0x007E59'
+#    yellow:  '0xF7B928'
+#    blue:    '0x2D88FF'
+#    magenta: '0xD24294'
+#    cyan:    '0x54C7EC'
+#    white:   '0x999da2'
+#  bright:
+#    black:   '0x3c4043'
+#    red:     '0xff0000'
+#    green:   '0x00ff00'
+#    yellow:  '0xF7B928'
+#    blue:    '0x5c5cff'
+#    magenta: '0xff00ff'
+#    cyan:    '0x00ffff'
+#    white:   '0xffffff'
+
+# Github Dark Dimmed
+#colors:
+#  primary:
+#    background: '#22272e'
+#    foreground: '#adbac7'
+#  normal:
+#    black:   '#22272e'
+#    white:   '#adbac7'
+#    red:     '#f47067'
+#    green:   '#8ddb8c'
+#    yellow:  '#f69d50'
+#    blue:    '#6cb6ff'
+#    magenta: '#dcbdfb'
+#    cyan:    '#96d0ff'
+#  bright:
+#    black:   '#545d78'
+#    white:   '#768390'
+#    red:     '#f47067'
+#    green:   '#8ddb8c'
+#    yellow:  '#f69d50'
+#    blue:    '#6cb6ff'
+#    magenta: '#dcbdfb'
+#    cyan:    '#96d0ff'
